@@ -24,13 +24,11 @@ const router = createHashRouter([
         element: <ProjectPage/>,
     },
     {
-        path: "/contributions/",
-        element: <ExchangeData/>,
-    },
-    {
         path: "/profile/",
         element: <ExchangeData/>,
     }
+    
+
 ]);
 
 createRoot(document.getElementById("root"))

@@ -20,12 +20,10 @@ function Navigation() {
           <Button color="inherit" component={Link} to="/archives" className={({ isActive }) => (isActive ? "active-link" : "link")}>
           Archives
           </Button>
-          <Button color="inherit" component={Link} to="/contributions" className={({ isActive }) => (isActive ? "active-link" : "link")}>
-           Creer une contribution
-          </Button>
           <Button color="inherit" component={Link} to="/profile" className={({ isActive }) => (isActive ? "active-link" : "link")}>
            Profil
           </Button>
+          
         </Box>
       </Toolbar>
     </AppBar>

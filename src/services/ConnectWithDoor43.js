@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { useLocation } from 'react-router-dom';
-import Logo from '../components/Logo';
 import Profile from '../components/Profile';
 import { exchangeCodeForAccessToken, fetchUserProfile, fetchOrganizationsWithTeamsAndRepos, logout } from '../services/auth';
 import { useAuth } from '../services/AuthContext';
@@ -64,8 +63,7 @@ function Door43LoginButton() {
     }, [code, returnedState, storedState]);
 
     return (
-        <div className="header">
-            <Logo />
+        <div>
             {user ? (
                 <div>
                     <Profile username={user} avatarUrl={avatarUrl} />

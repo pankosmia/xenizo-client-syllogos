@@ -1,0 +1,20 @@
+{
+  "id": "xenizo-syllogos",
+  "require": {
+    "net": true
+  },
+  "i18n": {
+    "title": {
+      "en": "Syllogos",
+      "fr": "Syllogos"
+    },
+    "summary": {
+      "en": "Create conversations",
+      "fr": "Créer des conversations"
+    },
+    "stub_content": {
+      "en": "Content goes here",
+      "fr": "Le contenu se met ici"
+    }
+  }
+}

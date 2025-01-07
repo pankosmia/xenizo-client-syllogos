@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {createRoot} from "react-dom/client";
-import {Spa} from "pithekos-lib";
+import {Spa,SpSpa,bcvContext,postEmptyJson} from "pithekos-lib";
 import './index.css';
 import {createHashRouter, RouterProvider} from "react-router-dom";
-import {SpSpa} from "pithekos-lib";
+
 
 import Home from './pages/Home';
 import ExchangeData from './pages/Repositories'
 import ProjectPage from './pages/Projects';
 import ArchivePage from './pages/Archive';
+const {bcvRef} =useContext(bcvContext);
 
 const router = createHashRouter([
     {
@@ -28,7 +29,7 @@ const router = createHashRouter([
         element: <ExchangeData/>,
     }
     
-
+    
 ]);
 
 createRoot(document.getElementById("root"))
@@ -40,6 +41,7 @@ createRoot(document.getElementById("root"))
         >
             <Spa>
                 <RouterProvider router={router}/>
+                <p onClick={()=> postEmptyJson("/navigation/bcv/MRK/3/5")}>Do Bcv {JSON.stringify(bcvRef.current)}</p>
             </Spa>
         </SpSpa>
     );

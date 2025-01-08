@@ -9,7 +9,7 @@ import Home from './pages/Home';
 import ExchangeData from './pages/Repositories'
 import ProjectPage from './pages/Projects';
 import ArchivePage from './pages/Archive';
-const {bcvRef} =useContext(bcvContext);
+
 
 const router = createHashRouter([
     {
@@ -41,7 +41,7 @@ createRoot(document.getElementById("root"))
         >
             <Spa>
                 <RouterProvider router={router}/>
-                <p onClick={()=> postEmptyJson("/navigation/bcv/MRK/3/5")}>Do Bcv {JSON.stringify(bcvRef.current)}</p>
+               
             </Spa>
         </SpSpa>
     );

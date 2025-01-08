@@ -15,59 +15,59 @@ const ProfileUser = () => {
     const [loading, setLoading] = useState(true); 
     const [error, setError] = useState(null); 
 
-    useEffect(() => {
-    const sessionToken = Cookies.get('session'); 
-    console.log('Session token:', sessionToken);
+//     useEffect(() => {
+//     const sessionToken = Cookies.get('session'); 
+//     console.log('Session token:', sessionToken);
 
-    if (!sessionToken) {
-        setError("Utilisateur non connecté.");
-        setLoading(false);
-        return;
-    }
+//     if (!sessionToken) {
+//         setError("Utilisateur non connecté.");
+//         setLoading(false);
+//         return;
+//     }
 
-    const fetchUserData = async () => {
-        try {
-            const userResponse = await axios.get('/api/user', { params: { session_token: sessionToken} });
+//     const fetchUserData = async () => {
+//         try {
+//             const userResponse = await axios.get('/api/user', { params: { session_token: sessionToken} });
 
-            const orgResponse = await axios.get('/api/organizations', {
-                params: { session_token: sessionToken },
-            });
-            console.log("Données des organisations reçues :", orgResponse.data);
+//             const orgResponse = await axios.get('/api/organizations', {
+//                 params: { session_token: sessionToken },
+//             });
+//             console.log("Données des organisations reçues :", orgResponse.data);
 
-            // Mettre à jour les données utilisateur
-            setUserData({
-                ...userResponse.data, 
-                organizations: orgResponse.data || [], 
-            });
+//             // Mettre à jour les données utilisateur
+//             setUserData({
+//                 ...userResponse.data, 
+//                 organizations: orgResponse.data || [], 
+//             });
 
-            setLoading(false); 
-        } catch (error) {
-            if (error.response) {
-                console.error("Erreur de réponse API :", error.response.data);
-            } else if (error.request) {
-                console.error("Aucune réponse reçue :", error.request);
-            } else {
-                console.error("Erreur lors de la configuration de la requête :", error.message);
-            }
-            setError("Impossible de récupérer les données utilisateur ou organisations.");
-            setLoading(false);
-        }
-    };
+//             setLoading(false); 
+//         } catch (error) {
+//             if (error.response) {
+//                 console.error("Erreur de réponse API :", error.response.data);
+//             } else if (error.request) {
+//                 console.error("Aucune réponse reçue :", error.request);
+//             } else {
+//                 console.error("Erreur lors de la configuration de la requête :", error.message);
+//             }
+//             setError("Impossible de récupérer les données utilisateur ou organisations.");
+//             setLoading(false);
+//         }
+//     };
 
-    fetchUserData();
-}, []);
+//     fetchUserData();
+// }, []);
 
-    const handleOrgClick = (orgId) => {
-        setExpandedOrg(expandedOrg === orgId ? null : orgId);
-    };
+    // const handleOrgClick = (orgId) => {
+    //     setExpandedOrg(expandedOrg === orgId ? null : orgId);
+    // };
 
-    if (loading) {
-        return <div>Chargement des données...</div>;
-    }
+    // if (loading) {
+    //     return <div>Chargement des données...</div>;
+    // }
 
-    if (error) {
-        return <div>{error}</div>;
-    }
+    // if (error) {
+    //     return <div>{error}</div>;
+    // }
 
     return (
         
@@ -92,13 +92,13 @@ const ProfileUser = () => {
                     {userData.organizations?.length > 0 ? (
                         userData.organizations.map((org) => (
                             <div key={org.orgId}>
-                                <li
+                                {/* <li
                                 
                                     onClick={() => handleOrgClick(org.orgId)}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     {org.username} 
-                                </li>
+                                </li> */}
                                 {expandedOrg === org.orgId && (
                                     <div>
                                         <li>
@@ -123,7 +123,7 @@ const ProfileUser = () => {
                 </ul>
             </div>
 
-            <Link to="/client">Retour</Link>
+            <Link to="/">Retour</Link>
         </div>
     );
 };

@@ -19,19 +19,9 @@ code {
 }
 
 
-.link {
-  color: rgb(141, 41, 41);
-  text-decoration: none;
-}
-
-.active-link {
-  color: #4CAF50; 
-  font-weight: bold;
-  text-decoration: underline;
-}
-
 .button-door43{
-  background-color: cadetblue !important;
-  
+  background-color: rgb(132, 180, 166) !important;
+
 
 }
+

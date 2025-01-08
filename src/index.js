@@ -9,7 +9,7 @@ import Home from './pages/Home';
 import ExchangeData from './pages/Repositories'
 import ProjectPage from './pages/Projects';
 import ArchivePage from './pages/Archive';
-
+import ProfileUser from './pages/ProfileUser';
 
 const router = createHashRouter([
     {
@@ -26,9 +26,9 @@ const router = createHashRouter([
     },
     {
         path: "/profile/",
-        element: <ExchangeData/>,
+        element: <ProfileUser/>,
     }
-    
+ 
     
 ]);
 

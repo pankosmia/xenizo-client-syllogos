@@ -381,16 +381,16 @@ const ExchangeData = () => {
     };
 
     return (
-        <div className="container-fluid px-3">
+        <div>
             {loading ? (
                 <p>Chargement des données...</p>
             ) : error ? (
                 <p>{error}</p>
             ) : (
                 <div>
-                    <div className="d-flex justify-content-end align-items-center py-2">
+                    <div>
                         <button
-                            className="btn btn-pink"
+                            
                             onClick={() => setShowForm(!showForm)}
                             style={{ minWidth: '200px' }}
                         >
@@ -399,10 +399,10 @@ const ExchangeData = () => {
                     </div>
                 
                     {showForm && (
-                        <div className="mt-3">
-                            <h1 className="my-3 text-center">Créer la contribution</h1>
+                        <div>
+                            <h1>Créer la contribution</h1>
                             <form onSubmit={handleSubmit}>
-                                <div className="form-group mt-3">
+                                <div>
                                     <label>Organisation</label>
                                     <select
                                         value={selectedOrganization}
@@ -412,7 +412,7 @@ const ExchangeData = () => {
                                             filterTeamsByOrganization(orgUsername);
                                             filterRepositoriesByOrganization(orgUsername);
                                         }}
-                                        className="form-control"
+                                        
                                         required
                                     >
                                         <option value="">Sélectionnez une organisation</option>
@@ -424,12 +424,12 @@ const ExchangeData = () => {
                                     </select>
                                 </div>
                 
-                                <div className="form-group mt-3">
+                                <div>
                                     <label>Équipe</label>
                                     <select
                                         value={selectedTeams}
                                         onChange={(e) => setSelectedTeams(e.target.value)}
-                                        className="form-control"
+                                        
                                         required
                                     >
                                         <option value="">Sélectionnez une équipe</option>
@@ -441,7 +441,7 @@ const ExchangeData = () => {
                                     </select>
                                 </div>
                     
-                                    <div className="form-group mt-3">
+                                    <div>
                                         <label>Nom du Projet</label>
                                         <select
                                             value={nameProject}
@@ -449,7 +449,7 @@ const ExchangeData = () => {
                                                 console.log("Projet sélectionné:", e.target.value);
                                                 setNameProject(e.target.value); // Mettre à jour le nom du projet sélectionné
                                             }}
-                                            className="form-control"
+                                            
                                             required
                                         >
                                             <option value="">Sélectionnez un projet</option>
@@ -462,25 +462,23 @@ const ExchangeData = () => {
                                     </div>
 
 
-                                <div className="form-group mt-3">
+                                <div>
                                     <label>Nom du Livre</label>
                                     <input
                                         placeholder="Nom du livre"
                                         value={bookName}
                                         onChange={(e) => setBookName(e.target.value)}
-                                        className="form-control"
                                         required
                                     />
                                 </div>
                 
-                                <div className="form-group mt-3 d-flex">
-                                    <div className="mr-3" style={{ flex: 1 }}>
+                                <div>
+                                    <div  style={{ flex: 1 }}>
                                         <label>Chapitre</label>
                                         <input
                                             type="text"
                                             value={chapter}
                                             onChange={(e) => setChapter(e.target.value)}
-                                            className="form-control"
                                             required
                                         />
                                     </div>
@@ -491,29 +489,28 @@ const ExchangeData = () => {
                                             type="text"
                                             value={verse}
                                             onChange={(e) => setVerse(e.target.value)}
-                                            className="form-control"
                                             required
                                         />
                                     </div>
                                 </div>
 
-                                <div className="form-group mt-3">
+                                <div>
                                     <label>Description (facultative)</label>
                                     <textarea
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
-                                        className="form-control"
+                                        
                                         style={{ maxHeight: '400px', minHeight: '80px' }}
                                     />
                                 </div>
                 
-                                <div className="form-group mt-4">
-                                    <button type="submit" className="btn btn-secondary w-100">
+                                <div>
+                                    <button type="submit">
                                         Créer Contribution
                                     </button>
                                 </div>
                             </form>
-                            {message && <p className="text-success text-center mt-3">{message}</p>}
+                            {message && <p>{message}</p>}
                         </div>
                     )}
                 </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import Navigation from '../components/Navigation';
 
 const ProfileUser = () => {
     const [userData, setUserData] = useState({
@@ -61,16 +62,18 @@ const ProfileUser = () => {
     };
 
     if (loading) {
-        return <div className="text-center mt-5">Chargement des données...</div>;
+        return <div>Chargement des données...</div>;
     }
 
     if (error) {
-        return <div className="text-center text-danger mt-5">{error}</div>;
+        return <div>{error}</div>;
     }
 
     return (
-        <div className="container mt-5">
-            <div className="d-flex align-items-center justify-content-between mb-4">
+        
+        <div>
+            <Navigation/>
+            <div>
                 <h2>Bienvenue, {userData.username || 'Utilisateur'} !</h2> 
                 {userData.avatar_url && (
                     <img
@@ -83,44 +86,44 @@ const ProfileUser = () => {
 
             <p>ID Utilisateur : {userData.userId}</p> 
 
-            <div className="profile-section mb-4">
+            <div>
                 <h3>Organisations</h3>
-                <ul className="list-group">
+                <ul>
                     {userData.organizations?.length > 0 ? (
                         userData.organizations.map((org) => (
-                            <div key={org.orgId} className="mb-3" >
+                            <div key={org.orgId}>
                                 <li
-                                    className="list-group-item d-flex justify-content-between align-items-center"
+                                
                                     onClick={() => handleOrgClick(org.orgId)}
                                     style={{ cursor: 'pointer' }}
                                 >
                                     {org.username} 
                                 </li>
                                 {expandedOrg === org.orgId && (
-                                    <div className="list-group">
-                                        <li className="list-group-item bg-secondary text-white text-center mt-1">
+                                    <div>
+                                        <li>
                                             Équipes
                                         </li>
                                         {org.teams && org.teams.length > 0 ? (
                                             org.teams.map((team) => (
-                                                <li key={team.teamId} className="list-group-item">
+                                                <li key={team.teamId}>
                                                     {team.name}
                                                 </li>
                                             ))
                                         ) : (
-                                            <li className="list-group-item">Aucune équipe trouvée.</li>
+                                            <li>Aucune équipe trouvée.</li>
                                         )}
                                     </div>
                                 )}
                             </div>
                         ))
                     ) : (
-                        <li className="list-group-item">Aucune organisation trouvée.</li>
+                        <li>Aucune organisation trouvée.</li>
                     )}
                 </ul>
             </div>
 
-            <Link to="/client" className="btn btn-secondary">Retour</Link>
+            <Link to="/client">Retour</Link>
         </div>
     );
 };

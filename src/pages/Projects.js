@@ -121,20 +121,20 @@ const ProjectPage = () => {
     };
 
     return (
-        <div className="container-fluid px-3">
+        <div>
             <Navigation/>
             <ExchangeData />
             {loading ? (
                 <p>Chargement des données...</p>
             ) : error ? (
-                <p className="text-danger">{error}</p>
+                <p >{error}</p>
             ) : (
-                <div className="container mt-4 mb-4">
-                    <h1 className="my-3 text-center">Liste des Contributions</h1>
+                <div>
+                    <h1>Liste des Contributions</h1>
 
                     {activeDiscussionId ? (
                         <div>
-                            <button className="btn btn-primary mb-3" onClick={() => setActiveDiscussionId(null)}>
+                            <button onClick={() => setActiveDiscussionId(null)}>
                                 Retour
                             </button>
                             <h3>Discussion</h3>
@@ -149,15 +149,14 @@ const ProjectPage = () => {
                                     <p>Aucun message pour cette discussion.</p>
                                 )}
                             </div>
-                            <div className="mt-3">
+                            <div>
                                 <input
                                     type="text"
-                                    className="form-control"
                                     placeholder="Écrire un message"
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
                                 />
-                                <button className="btn btn-success mt-2" onClick={handleSendMessage}>
+                                <button onClick={handleSendMessage}>
                                     Envoyer
                                 </button>
                             </div>
@@ -168,17 +167,16 @@ const ProjectPage = () => {
                                 const projectCount = groupedContributions[title].length;
 
                                 return (
-                                    <div key={title} className="border-bottom mb-4">
+                                    <div key={title}>
                                         <div
-                                            className="d-flex justify-content-between align-items-center py-2"
                                             onClick={() => toggleProjectExpansion(title)}
                                             style={{ cursor: 'pointer' }}
                                         >
-                                            <div className="col-10">
-                                                <strong>Projet : {title} <span className="text-muted">({projectCount} projets)</span></strong>
+                                            <div>
+                                                <strong>Projet : {title} <span>({projectCount} projets)</span></strong>
                                             </div>
-                                            <div className="col-2 text-right">
-                                                <button className="btn no-outline">
+                                            <div >
+                                                <button>
                                                     {expandedTitle === title ? '▲' : '▼'}
                                                 </button>
                                             </div>
@@ -186,9 +184,9 @@ const ProjectPage = () => {
 
                                         {expandedTitle === title && (
 
-                                            <div className="p-3 bg-light">
+                                            <div>
                                                     {groupedContributions[title].map(contribution => (
-                                                        <div key={contribution._id} className="mb-3">
+                                                        <div key={contribution._id}>
                                                             <div><strong>Nom du Livre :</strong> {contribution.bookName}</div>
                                                             <div><strong>Créé par :</strong> {contribution.createdBy}</div>
                                                             <div><strong>Équipe :</strong> {contribution.selectedTeams}</div>
@@ -201,16 +199,14 @@ const ProjectPage = () => {
                                                                 hour: '2-digit',
                                                                 minute: '2-digit',
                                                             })}</div>
-                                                            <div className="mt-2 d-flex justify-content-between">
+                                                            <div>
                                                                 <button
-                                                                    className="btn btn-success btn-sm"
                                                                     onClick={() => handleViewDiscussion(contribution._id)}
                                                                 >
                                                                     Afficher
                                                                 </button>
                                                                 {contribution.statut !== 'cloture' && (
                                                                     <button
-                                                                        className="btn btn-danger btn-sm"
                                                                         onClick={() => handleCloture(contribution._id)}>
                                                                         Clôturer
                                                                     </button>
@@ -226,7 +222,7 @@ const ProjectPage = () => {
                                 );
                             })
                         ) : (
-                            <p className="text-center">Aucune contribution trouvée pour ce titre de projet.</p>
+                            <p>Aucune contribution trouvée pour ce titre de projet.</p>
                         )
                     )}
                 </div>

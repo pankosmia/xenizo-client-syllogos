@@ -72,65 +72,62 @@ const ArchivePage = () => {
     };
 
     return (
-        <div className="container-fluid px-3">
+        <div>
             <Navigation />
             {loading ? (
                 <p>Chargement des données...</p>
             ) : error ? (
-                <p className="text-danger">{error}</p>
+                <p>{error}</p>
             ) : (
-                <div className="container mt-4 mb-4">
-                    <h1 className="my-3 text-center">Archives des Contributions</h1>
+                <div>
+                    <h1>Archives des Contributions</h1>
 
                     {Object.keys(groupedArchives).length > 0 ? (
                         Object.keys(groupedArchives).map((title) => {
                             const archiveCount = Object.keys(groupedArchives[title]).length;
 
                             return (
-                                <div key={title} className="border-bottom mb-4">
+                                <div key={title}>
                                     <div
-                                        className="d-flex justify-content-between align-items-center py-2"
                                         onClick={() => toggleArchiveExpansion(title)}
                                         style={{ cursor: 'pointer' }}
                                     >
-                                        <div className="col-10">
-                                            <strong>Projet : {title} <span className="text-muted">({archiveCount} projets)</span></strong>
+                                        <div>
+                                            <strong>Projet : {title} <span>({archiveCount} projets)</span></strong>
                                         </div>
-                                        <div className="col-2 text-right">
-                                            <button className="btn no-outline">
+                                        <div>
+                                            <button>
                                                 {expandedArchive === title ? '▲' : '▼'}
                                             </button>
                                         </div>
                                     </div>
 
                                     {expandedArchive === title && (
-                                        <div className="p-3 bg-light">
+                                        <div>
                                             {/* Gestion de l'expansion des projets */}
                                             {Object.keys(groupedArchives[title]).map((projectName) => (
-                                                <div key={projectName} className="border-bottom mb-3">
+                                                <div key={projectName}>
                                                     <div
-                                                        className="d-flex justify-content-between align-items-center py-2"
                                                         onClick={() => toggleProjectExpansion(title, projectName)}
                                                         style={{ cursor: 'pointer' }}
                                                     >
-                                                        <div className="col-10">
+                                                        <div>
                                                             <strong>{projectName}</strong>
                                                         </div>
-                                                        <div className="col-2 text-right">
-                                                            <button className="btn no-outline">
+                                                        <div>
+                                                            <button>
                                                                 {expandedProject === `${title}-${projectName}` ? '▲' : '▼'}
                                                             </button>
                                                         </div>
                                                     </div>
 
                                                     {expandedProject === `${title}-${projectName}` && (
-                                                        <div className="p-3 bg-light">
+                                                        <div>
                                                             {groupedArchives[title][projectName].map((archive) => (
-                                                                <div key={archive._id} className="mb-4 p-3 bg-white border rounded">
+                                                                <div key={archive._id}>
                                                                     <div>
                                                                         <strong>Chapitre {archive.chapter} , Verset {archive.verse} </strong>
                                                                         <button
-                                                                            className="btn no-outline"
                                                                             onClick={() => toggleChapterExpansion(archive._id)} // Utilisation de l'ID unique pour chaque chapitre
                                                                         >
                                                                             {expandedChapterId === archive._id ? '▲' : '▼'} Voir
@@ -138,7 +135,7 @@ const ArchivePage = () => {
                                                                     </div>
 
                                                                     {expandedChapterId === archive._id && (
-                                                                        <div className="mt-3">
+                                                                        <div>
                                                                             <h6>Messages :</h6>
                                                                             {archive.messages.length > 0 ? (
                                                                                 <div
@@ -150,10 +147,10 @@ const ArchivePage = () => {
                                                                                     }}
                                                                                 >
                                                                                     {archive.messages.map((message, index) => (
-                                                                                        <div key={index} className="mb-2">
+                                                                                        <div key={index}>
                                                                                             <strong>{message.author} :</strong>{' '}
                                                                                             {message.content}
-                                                                                            <div className="text-muted small">
+                                                                                            <div>
                                                                                                 {new Date(message.createdAt).toLocaleString('fr-FR')}
                                                                                             </div>
                                                                                         </div>
@@ -176,7 +173,7 @@ const ArchivePage = () => {
                             );
                         })
                     ) : (
-                        <p className="text-center">Aucune archive trouvée.</p>
+                        <p>Aucune archive trouvée.</p>
                     )}
                 </div>
             )}

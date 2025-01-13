@@ -27,8 +27,11 @@ const router = createHashRouter([
     {
         path: "/profile/",
         element: <ProfileUser/>,
+    },
+    {
+        path: "/repositories/",
+        element: <ExchangeData/>,
     }
- 
     
 ]);
 

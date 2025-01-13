@@ -65,7 +65,7 @@ function Door43LoginButton() {
     // }, [code, returnedState, storedState]);
 
     return (
-        <div>
+        <div className="container">
             {user ? (
                 <div>
                     <Profile username={user} avatarUrl={avatarUrl} />

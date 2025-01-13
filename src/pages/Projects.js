@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import ExchangeData from './Repositories';
 import Navigation from '../components/Navigation';
+import {bcvContext,postEmptyJson} from "pithekos-lib";
 
 const ProjectPage = () => {
     const [contributions, setContributions] = useState([]);
@@ -18,7 +19,7 @@ const ProjectPage = () => {
     const [userData, setUserData] = useState({ username: '' });
 
     const navigate = useNavigate();
-
+    const {bcvRef} =useContext(bcvContext);
     // useEffect(() => {
     //     const fetchData = async () => {
     //         const sessionToken = Cookies.get('session'); 
@@ -123,7 +124,10 @@ const ProjectPage = () => {
     return (
         <div>
             <Navigation/>
+            <p onClick={()=> postEmptyJson("/navigation/bcv/MRK/3/5")}>Do Bcv {JSON.stringify(bcvRef.current)}</p>
+            
             <ExchangeData />
+
             {loading ? (
                 <p>Chargement des données...</p>
             ) : error ? (

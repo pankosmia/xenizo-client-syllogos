@@ -19,9 +19,21 @@ code {
 }
 
 
-.button-door43{
+.button-door43 {
   background-color: rgb(132, 180, 166) !important;
-
-
+  box-sizing: border-box;
+  padding: 20px 40px; /* Exemple de padding plus visible */
+  margin: 0 auto;    /* Centrer le bouton */
+  display: block;    /* S'assurer qu'il est en mode bloc */
+  text-align: center; /* Centrer le texte */
 }
 
+/* Conteneur pour illustrer l'alignement */
+.container {
+  width: 100%; /* Largeur du conteneur */
+  height: 50px; /* Hauteur du conteneur */
+  display: flex;
+  justify-content: flex-end; /* Place le bouton à droite */
+  align-items: center; /* Centrage vertical */
+
+}

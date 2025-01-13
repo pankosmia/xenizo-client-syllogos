@@ -277,6 +277,12 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { bcvContext, postEmptyJson } from "pithekos-lib";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+} from "@mui/material";
 
 const ExchangeData = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -284,10 +290,10 @@ const ExchangeData = () => {
   const [filteredRepositories, setFilteredRepositories] = useState([]);
   const [selectedOrganization, setSelectedOrganization] = useState("");
   const [selectedTeams, setSelectedTeams] = useState("");
-  const [bookName, setBookName] = useState(""); // Nom du livre (entrée manuelle)
-  const [chapter, setChapter] = useState(""); // Chapitre
-  const [verse, setVerse] = useState(""); // Verset
-  const [nameProject, setNameProject] = useState(""); // Nom du projet (sélectionné)
+  //const [bookName, setBookName] = useState(""); // Nom du livre (entrée manuelle)
+  //const [chapter, setChapter] = useState(""); // Chapitre
+  //const [verse, setVerse] = useState(""); // Verset
+  //const [nameProject, setNameProject] = useState(""); // Nom du projet (sélectionné)
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState(null);
@@ -333,6 +339,11 @@ const ExchangeData = () => {
   // }, []);
   const { bcvRef } = useContext(bcvContext);
 
+  const bookName = JSON.stringify(bcvRef.current.bookCode);
+  const chapter = JSON.stringify(bcvRef.current.chapter);
+  const verse = JSON.stringify(bcvRef.current.verse);
+  const nameProject = `${bookName} - ${chapter} - ${verse}`;
+
   const filterTeamsByOrganization = (orgUsername) => {
     const selectedOrg = organizations.find(
       (org) => org.username === orgUsername
@@ -376,151 +387,175 @@ const ExchangeData = () => {
 
   const resetForm = () => {
     setDescription("");
-    setBookName("");
-    setChapter("");
-    setVerse("");
+    //setBookName("");
+    //setChapter("");
+    //setVerse("");
     setSelectedOrganization("");
     setError(null);
-    setNameProject("");
+    //setNameProject("");
     setSelectedTeams("");
     setProjectNameError("");
   };
 
-  // return (
+  //   return (
   //     <div>
-  //         <p onClick={()=> postEmptyJson("/navigation/bcv/MRK/3/5")}>Do Bcv {JSON.stringify(bcvRef.current.bookCode)}</p>
+  //       <div>
   //         <div>
-  //             <label>Nom du Livre</label>
-  //                 <pre>
-  //                     {JSON.stringify(bcvRef.current.bookCode)}
-  //                 </pre>
-
+  //           <button
+  //             onClick={() => setShowForm(!showForm)} // Toggle pour afficher/masquer
+  //             style={{ minWidth: "200px" }}
+  //           >
+  //             {showForm
+  //               ? "Masquer le formulaire"
+  //               : "Créer une nouvelle contribution"}
+  //           </button>
   //         </div>
 
+  //         {showForm && (
+  //           <div>
+  //             <h1>Créer la contribution</h1>
+  //             <form onSubmit={handleSubmit}>
+  //               <div>
+  //                 <label>Nom du Projet</label>
+  //                 <pre>{JSON.stringify(bcvRef.current.bookCode)} {JSON.stringify(bcvRef.current.chapter)} :{JSON.stringify(bcvRef.current.verse)}</pre>
+  //               </div>
+
+  //               <div>
+  //                 <label>Nom du Livre</label>
+  //                 <pre>{JSON.stringify(bcvRef.current.bookCode)}</pre>
+  //               </div>
+
+  //               <div>
+  //                 <div className="mr-3" style={{ flex: 1 }}>
+  //                   <div>
+  //                     <label> Chapitre</label>
+  //                     <pre>{JSON.stringify(bcvRef.current.chapter)}</pre>
+  //                   </div>
+  //                 </div>
+
+  //                 <div style={{ flex: 1 }}>
+  //                   <div>
+  //                     <label> Verset </label>
+  //                     <pre>{JSON.stringify(bcvRef.current.verse)}</pre>
+  //                   </div>
+  //                 </div>
+  //               </div>
+
+  //               <div>
+  //                 <label>Description (facultative)</label>
+  //                 <textarea
+  //                   value={description}
+  //                   onChange={(e) => setDescription(e.target.value)}
+  //                   className="form-control"
+  //                   style={{ maxHeight: "400px", minHeight: "80px" }}
+  //                 />
+  //               </div>
+
+  //               <div>
+  //                 <button type="submit">
+  //                   Créer Contribution
+  //                 </button>
+  //               </div>
+  //             </form>
+  //             {message && (
+  //               <p>{message}</p>
+  //             )}
+  //           </div>
+  //         )}
+  //       </div>
   //     </div>
-  // );
+  //   );
+  // };
+
   return (
-    <div className="container-fluid px-3">
-      <div>
-        <div className="d-flex justify-content-end align-items-center py-2">
-          <button
-            className="btn btn-pink"
-            onClick={() => setShowForm(!showForm)} // Toggle pour afficher/masquer
-            style={{ minWidth: "200px" }}
-          >
-            {showForm
-              ? "Masquer le formulaire"
-              : "Créer une nouvelle contribution"}
-          </button>
-        </div>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        maxWidth: 500,
+        margin: "auto",
+        padding: 3,
+        boxShadow: 3,
+        borderRadius: 2,
+        backgroundColor: "#f5f5f5",
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
+        Formulaire de Projet
+      </Typography>
 
-        {showForm && (
-          <div className="mt-3">
-            <h1 className="my-3 text-center">Créer la contribution</h1>
-            <form onSubmit={handleSubmit}>
-              <div className="form-group mt-3">
-                <label>Organisation</label>
-                <select
-                  value={selectedOrganization}
-                  onChange={(e) => {
-                    const orgUsername = e.target.value;
-                    setSelectedOrganization(orgUsername);
-                    filterTeamsByOrganization(orgUsername);
-                    filterRepositoriesByOrganization(orgUsername);
-                  }}
-                  className="form-control"
-                  required
-                >
-                  <option value="">Sélectionnez une organisation</option>
-                  {organizations.map((org) => (
-                    <option key={org._id} value={org.username}>
-                      {org.username}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {/* Nom du projet */}
+      <TextField
+        label="Nom du projet"
+        name="nomProjet"
+        value={nameProject}
+        //onChange={handleChange}
+        fullWidth
+        margin="normal"
+        required
+        disabled
+      />
 
-              <div className="form-group mt-3">
-                <label>Équipe</label>
-                <select
-                  value={selectedTeams}
-                  onChange={(e) => setSelectedTeams(e.target.value)}
-                  className="form-control"
-                  required
-                >
-                  <option value="">Sélectionnez une équipe</option>
-                  {filteredTeams.map((team) => (
-                    <option key={team.teamId} value={team.name}>
-                      {team.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {/* Nom du livre */}
+      <TextField
+        label="Nom du livre"
+        name="nomLivre"
+        value={bookName}
+        //onChange={handleChange}
+        fullWidth
+        margin="normal"
+        required
+        disabled
+      />
 
-              <div className="form-group mt-3">
-                <label>Nom du Projet</label>
-                <select
-                  value={nameProject}
-                  onChange={(e) => {
-                    console.log("Projet sélectionné:", e.target.value);
-                    setNameProject(e.target.value); // Mettre à jour le nom du projet sélectionné
-                  }}
-                  className="form-control"
-                  required
-                >
-                  <option value="">Sélectionnez un projet</option>
-                  {filteredRepositories.map((repo) => (
-                    <option key={repo.id} value={repo.name}>
-                      {repo.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {/* Chapitre */}
+      <TextField
+        label="Chapitre"
+        name="chapitre"
+        type="number"
+        value={chapter}
+        //onChange={handleChange}
+        fullWidth
+        margin="normal"
+        required
+        InputLabelProps={{ shrink: true }}
+        disabled
+      />
 
-              <div className="form-group mt-3">
-                <label>Nom du Livre</label>
-                <pre>{JSON.stringify(bcvRef.current.bookCode)}</pre>
-              </div>
+      {/* Verset */}
+      <TextField
+        label="Verset"
+        name="verset"
+        value={verse}
+        //onChange={handleChange}
+        fullWidth
+        margin="normal"
+        required
+        InputLabelProps={{ shrink: true }}
+        disabled
+      />
 
-              <div className="form-group mt-3 d-flex">
-                <div className="mr-3" style={{ flex: 1 }}>
-                  <div className="form-group mt-3">
-                    <label> Chapitre</label>
-                    <pre>{JSON.stringify(bcvRef.current.chapter)}</pre>
-                  </div>
-                </div>
+      {/* Description */}
+      <TextField
+        label="Description"
+        name="description"
+        multiline
+        rows={4}
+        fullWidth
+        margin="normal"
+      />
 
-                <div style={{ flex: 1 }}>
-                  <div className="form-group mt-3">
-                    <label> Verset </label>
-                    <pre>{JSON.stringify(bcvRef.current.verse)}</pre>
-                  </div>
-                </div>
-              </div>
-
-              <div className="form-group mt-3">
-                <label>Description (facultative)</label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="form-control"
-                  style={{ maxHeight: "400px", minHeight: "80px" }}
-                />
-              </div>
-
-              <div className="form-group mt-4">
-                <button type="submit" className="btn btn-secondary w-100">
-                  Créer Contribution
-                </button>
-              </div>
-            </form>
-            {message && (
-              <p className="text-success text-center mt-3">{message}</p>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+      {/* Bouton de soumission */}
+      <Button
+        type="submit"
+        variant="contained"
+        fullWidth
+        sx={{ marginTop: 2 }}
+        className="custom-createproject"
+      >
+        Soumettre
+      </Button>
+    </Box>
   );
 };
 

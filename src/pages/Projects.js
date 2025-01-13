@@ -128,6 +128,7 @@ const ProjectPage = () => {
             
             <ExchangeData />
 
+
             {loading ? (
                 <p>Chargement des données...</p>
             ) : error ? (

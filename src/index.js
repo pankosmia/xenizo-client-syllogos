@@ -1,12 +1,11 @@
 import React, { useContext } from 'react';
 import {createRoot} from "react-dom/client";
-import {Spa,SpSpa,bcvContext,postEmptyJson} from "pithekos-lib";
+import {Spa,SpSpa} from "pithekos-lib";
 import './index.css';
 import {createHashRouter, RouterProvider} from "react-router-dom";
 
 
 import Home from './pages/Home';
-import ExchangeData from './pages/Repositories'
 import ProjectPage from './pages/Projects';
 import ArchivePage from './pages/Archive';
 import ProfileUser from './pages/ProfileUser';
@@ -28,10 +27,6 @@ const router = createHashRouter([
         path: "/profile/",
         element: <ProfileUser/>,
     },
-    {
-        path: "/repositories/",
-        element: <ExchangeData/>,
-    }
     
 ]);
 
@@ -44,7 +39,6 @@ createRoot(document.getElementById("root"))
         >
             <Spa>
                 <RouterProvider router={router}/>
-               
             </Spa>
         </SpSpa>
     );

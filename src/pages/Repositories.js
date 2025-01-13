@@ -277,12 +277,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { bcvContext, postEmptyJson } from "pithekos-lib";
-import {
-  TextField,
-  Button,
-  Box,
-  Typography,
-} from "@mui/material";
+import { TextField, Button, Box, Typography } from "@mui/material";
 
 const ExchangeData = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -299,8 +294,8 @@ const ExchangeData = () => {
   const [error, setError] = useState(null);
   const [projectNameError, setProjectNameError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
   const [username, setUsername] = useState("");
+  const [formVisible, setFormVisible] = useState(false);
 
   // useEffect(() => {
   //     const fetchOrganizations = async () => {
@@ -342,7 +337,7 @@ const ExchangeData = () => {
   const bookName = JSON.stringify(bcvRef.current.bookCode);
   const chapter = JSON.stringify(bcvRef.current.chapter);
   const verse = JSON.stringify(bcvRef.current.verse);
-  const nameProject = `${bookName} - ${chapter} - ${verse}`;
+  const nameProject = `${bookName}  ${chapter} : ${verse}`;
 
   const filterTeamsByOrganization = (orgUsername) => {
     const selectedOrg = organizations.find(
@@ -397,164 +392,97 @@ const ExchangeData = () => {
     setProjectNameError("");
   };
 
-  //   return (
-  //     <div>
-  //       <div>
-  //         <div>
-  //           <button
-  //             onClick={() => setShowForm(!showForm)} // Toggle pour afficher/masquer
-  //             style={{ minWidth: "200px" }}
-  //           >
-  //             {showForm
-  //               ? "Masquer le formulaire"
-  //               : "Créer une nouvelle contribution"}
-  //           </button>
-  //         </div>
-
-  //         {showForm && (
-  //           <div>
-  //             <h1>Créer la contribution</h1>
-  //             <form onSubmit={handleSubmit}>
-  //               <div>
-  //                 <label>Nom du Projet</label>
-  //                 <pre>{JSON.stringify(bcvRef.current.bookCode)} {JSON.stringify(bcvRef.current.chapter)} :{JSON.stringify(bcvRef.current.verse)}</pre>
-  //               </div>
-
-  //               <div>
-  //                 <label>Nom du Livre</label>
-  //                 <pre>{JSON.stringify(bcvRef.current.bookCode)}</pre>
-  //               </div>
-
-  //               <div>
-  //                 <div className="mr-3" style={{ flex: 1 }}>
-  //                   <div>
-  //                     <label> Chapitre</label>
-  //                     <pre>{JSON.stringify(bcvRef.current.chapter)}</pre>
-  //                   </div>
-  //                 </div>
-
-  //                 <div style={{ flex: 1 }}>
-  //                   <div>
-  //                     <label> Verset </label>
-  //                     <pre>{JSON.stringify(bcvRef.current.verse)}</pre>
-  //                   </div>
-  //                 </div>
-  //               </div>
-
-  //               <div>
-  //                 <label>Description (facultative)</label>
-  //                 <textarea
-  //                   value={description}
-  //                   onChange={(e) => setDescription(e.target.value)}
-  //                   className="form-control"
-  //                   style={{ maxHeight: "400px", minHeight: "80px" }}
-  //                 />
-  //               </div>
-
-  //               <div>
-  //                 <button type="submit">
-  //                   Créer Contribution
-  //                 </button>
-  //               </div>
-  //             </form>
-  //             {message && (
-  //               <p>{message}</p>
-  //             )}
-  //           </div>
-  //         )}
-  //       </div>
-  //     </div>
-  //   );
-  // };
+  // Fonction pour basculer l'affichage du formulaire
+  const toggleForm = () => {
+    setFormVisible((prevState) => !prevState);
+  };
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleSubmit}
-      sx={{
-        maxWidth: 500,
-        margin: "auto",
-        padding: 3,
-        boxShadow: 3,
-        borderRadius: 2,
-        backgroundColor: "#f5f5f5",
-      }}
-    >
-      <Typography variant="h5" gutterBottom>
-        Formulaire de Projet
-      </Typography>
-
-      {/* Nom du projet */}
-      <TextField
-        label="Nom du projet"
-        name="nomProjet"
-        value={nameProject}
-        //onChange={handleChange}
-        fullWidth
-        margin="normal"
-        required
-        disabled
-      />
-
-      {/* Nom du livre */}
-      <TextField
-        label="Nom du livre"
-        name="nomLivre"
-        value={bookName}
-        //onChange={handleChange}
-        fullWidth
-        margin="normal"
-        required
-        disabled
-      />
-
-      {/* Chapitre */}
-      <TextField
-        label="Chapitre"
-        name="chapitre"
-        type="number"
-        value={chapter}
-        //onChange={handleChange}
-        fullWidth
-        margin="normal"
-        required
-        InputLabelProps={{ shrink: true }}
-        disabled
-      />
-
-      {/* Verset */}
-      <TextField
-        label="Verset"
-        name="verset"
-        value={verse}
-        //onChange={handleChange}
-        fullWidth
-        margin="normal"
-        required
-        InputLabelProps={{ shrink: true }}
-        disabled
-      />
-
-      {/* Description */}
-      <TextField
-        label="Description"
-        name="description"
-        multiline
-        rows={4}
-        fullWidth
-        margin="normal"
-      />
-
-      {/* Bouton de soumission */}
+    <Box sx={{ maxWidth: 500, margin: "auto", padding: 3 }}>
+      {/* Bouton pour ouvrir ou masquer le formulaire */}
       <Button
-        type="submit"
         variant="contained"
+        onClick={toggleForm}
         fullWidth
-        sx={{ marginTop: 2 }}
+        sx={{ marginBottom: 2 }}
         className="custom-createproject"
+
       >
-        Soumettre
+        {formVisible ? "Masquer le formulaire" : "Créer une contribution"}
       </Button>
+
+      {/* Si formVisible est vrai, afficher le formulaire */}
+      {formVisible && (
+        <Box component="form" onSubmit={handleSubmit}>
+          <Typography variant="h5" gutterBottom>
+            Formulaire de Projet Biblique
+          </Typography>
+
+          {/* TextField pour le Nom du Projet */}
+          <TextField
+            label="Nom du Projet"
+            name="nameProject"
+            value={nameProject}
+            fullWidth
+            margin="normal"
+            disabled
+          />
+
+          {/* TextField pour le Nom du Livre */}
+          <TextField
+            label="Nom du Livre"
+            name="bookName"
+            value={bookName}
+            fullWidth
+            margin="normal"
+            disabled
+          />
+
+          {/* TextField pour le Chapitre */}
+          <TextField
+            label="Chapitre"
+            name="chapter"
+            value={chapter}
+            fullWidth
+            margin="normal"
+            type="number"
+            disabled
+          />
+
+          {/* TextField pour le Verset */}
+          <TextField
+            label="Verset"
+            name="verse"
+            value={verse}
+            fullWidth
+            margin="normal"
+            type="number"
+            disabled
+          />
+
+          {/* Description */}
+          <TextField
+            label="Description"
+            name="description"
+            multiline
+            rows={4}
+            fullWidth
+            margin="normal"
+          />
+
+          {/* Bouton de soumission */}
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            sx={{ marginTop: 2 }}
+            className="custom-createproject"
+          >
+            Soumettre
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

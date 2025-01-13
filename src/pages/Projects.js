@@ -129,11 +129,6 @@ const ProjectPage = () => {
             <ExchangeData />
 
 
-            {loading ? (
-                <p>Chargement des données...</p>
-            ) : error ? (
-                <p >{error}</p>
-            ) : (
                 <div>
                     <h1>Liste des Contributions</h1>
 
@@ -231,7 +226,7 @@ const ProjectPage = () => {
                         )
                     )}
                 </div>
-            )}
+            
         </div>
     );
 };

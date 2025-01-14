@@ -6,6 +6,7 @@ import { exchangeCodeForAccessToken, fetchUserProfile, fetchOrganizationsWithTea
 import { useAuth } from '../services/AuthContext';
 import Button from "@mui/material/Button";
 import '../index.css';
+import logo from '../assets/img/logo.svg';
 
 function Door43LoginButton() {
     const [user, setUser] = useState(null);
@@ -73,7 +74,8 @@ function Door43LoginButton() {
                 </div>
             ) : (
                 <Button  className="button-door43" variant="contained" >
-                    Se connecter avec Door43
+                  <img width="30" height="30" src={logo} alt="Logo" aria-hidden="true" style={{marginRight:'8px'}}/> 
+                    Log in 
                 </Button>
             )}
             {loading && <p>chargement</p>}

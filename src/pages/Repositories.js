@@ -278,6 +278,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { bcvContext, postEmptyJson } from "pithekos-lib";
 import { TextField, Button, Box, Typography } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
 
 const ExchangeData = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -334,10 +335,12 @@ const ExchangeData = () => {
   // }, []);
   const { bcvRef } = useContext(bcvContext);
 
-  const bookName = JSON.stringify(bcvRef.current.bookCode);
-  const chapter = JSON.stringify(bcvRef.current.chapter);
-  const verse = JSON.stringify(bcvRef.current.verse);
+  const bookName =(bcvRef.current.bookCode);
+  const chapter =(bcvRef.current.chapter);
+  const verse = (bcvRef.current.verse);
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
+
+
 
   const filterTeamsByOrganization = (orgUsername) => {
     const selectedOrg = organizations.find(
@@ -406,7 +409,6 @@ const ExchangeData = () => {
         fullWidth
         sx={{ marginBottom: 2 }}
         className="custom-createproject"
-
       >
         {formVisible ? "Masquer le formulaire" : "Créer une contribution"}
       </Button>
@@ -415,72 +417,33 @@ const ExchangeData = () => {
       {formVisible && (
         <Box component="form" onSubmit={handleSubmit}>
           <Typography variant="h5" gutterBottom>
-            Formulaire de Projet Biblique
+            {nameProject}
           </Typography>
 
-          {/* TextField pour le Nom du Projet */}
-          <TextField
-            label="Nom du Projet"
-            name="nameProject"
-            value={nameProject}
-            fullWidth
-            margin="normal"
-            disabled
-          />
-
-          {/* TextField pour le Nom du Livre */}
-          <TextField
-            label="Nom du Livre"
-            name="bookName"
-            value={bookName}
-            fullWidth
-            margin="normal"
-            disabled
-          />
-
-          {/* TextField pour le Chapitre */}
-          <TextField
-            label="Chapitre"
-            name="chapter"
-            value={chapter}
-            fullWidth
-            margin="normal"
-            type="number"
-            disabled
-          />
-
-          {/* TextField pour le Verset */}
-          <TextField
-            label="Verset"
-            name="verse"
-            value={verse}
-            fullWidth
-            margin="normal"
-            type="number"
-            disabled
-          />
-
           {/* Description */}
-          <TextField
-            label="Description"
-            name="description"
-            multiline
-            rows={4}
-            fullWidth
-            margin="normal"
-          />
-
-          {/* Bouton de soumission */}
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ marginTop: 2 }}
-            className="custom-createproject"
+          <Box
+            sx={{
+              display: "flex", // Flexbox pour aligner en ligne
+              alignItems: "end", // Centrer verticalement
+              gap: 1, // Espacement entre les éléments
+            }}
           >
-            Soumettre
-          </Button>
+            <TextField
+              label="Message"
+              name="message"
+              placeholder={`send a message about ${nameProject}`}
+              multiline
+              rows={4}
+              fullWidth
+            />
+
+            {/* Bouton de soumission */}
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={<SendIcon />}
+            ></Button>
+          </Box>
         </Box>
       )}
     </Box>

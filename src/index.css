@@ -48,6 +48,7 @@ code {
 
 .text-block-message{
   background-color: rgb(218, 214, 214);
+  border-radius: 5px;
 }
 .text-block-message:focus{
   background-color: rgb(218, 214, 214);

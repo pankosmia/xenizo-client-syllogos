@@ -477,6 +477,14 @@ const ExchangeData = () => {
               rows={4}
               fullWidth
               className="text-block-message"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  border: 'none', // Supprime le contour
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none', // Supprime le contour principal
+                },
+              }}
             />
 
             {/* Bouton de soumission */}

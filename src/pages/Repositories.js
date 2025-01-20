@@ -279,6 +279,8 @@ import Cookies from "js-cookie";
 import { bcvContext, postEmptyJson } from "pithekos-lib";
 import { TextField, Button, Box, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
+import MessageIcon from "@mui/icons-material/Message";
+import ArchiveIcon from "@mui/icons-material/Archive";
 
 const ExchangeData = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -297,6 +299,7 @@ const ExchangeData = () => {
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
   const [formVisible, setFormVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState("opened");
 
   // useEffect(() => {
   //     const fetchOrganizations = async () => {
@@ -335,12 +338,10 @@ const ExchangeData = () => {
   // }, []);
   const { bcvRef } = useContext(bcvContext);
 
-  const bookName =(bcvRef.current.bookCode);
-  const chapter =(bcvRef.current.chapter);
-  const verse = (bcvRef.current.verse);
+  const bookName = bcvRef.current.bookCode;
+  const chapter = bcvRef.current.chapter;
+  const verse = bcvRef.current.verse;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
-
-
 
   const filterTeamsByOrganization = (orgUsername) => {
     const selectedOrg = organizations.find(
@@ -419,6 +420,47 @@ const ExchangeData = () => {
           <Typography variant="h5" gutterBottom>
             {nameProject}
           </Typography>
+          <Box
+            sx={{
+              display: "flex", // Active Flexbox
+              justifyContent: "space-between", // Écarte les éléments (gauche et droite)
+              alignItems: "flex-start", // Aligne verticalement les éléments
+              padding: "10px", // Ajoute un peu de marge intérieure
+              border: "none", // (Optionnel) Bordure pour visualiser la disposition
+            }}
+          >
+            <Typography
+              component="a"
+              href="syllogos#/projects"
+              className="custom-button-page-project"
+              onClick={() => setActiveTab("opened")}
+              sx={{
+                color:
+                  activeTab === "opened" ? "primary.main" : "text.secondary",
+                borderBottom: activeTab === "opened" ? "3px solid" : "none",
+        
+              }}
+            >
+              <MessageIcon sx={{ marginRight: "8px" }} />
+              {/* Ajoute un espace entre l'icône et le texte */}
+              Opened
+            </Typography>
+
+            <Typography
+              component="a"
+              className="custom-button-page-project"
+              href="syllogos#/projects"
+              onClick={() => setActiveTab("archived")}
+              sx={{
+                color:
+                  activeTab === "archived" ? "primary.main" : "text.secondary",
+                borderBottom: activeTab === "archived" ? "3px solid" : "none",
+              }}
+            >
+              <ArchiveIcon sx={{ marginRight: "8px" }} />
+              Archived
+            </Typography>
+          </Box>
 
           {/* Description */}
           <Box
@@ -429,20 +471,22 @@ const ExchangeData = () => {
             }}
           >
             <TextField
-              label="Message"
               name="message"
-              placeholder={`send a message about ${nameProject}`}
+              placeholder={`Send a message about ${nameProject}`}
               multiline
               rows={4}
               fullWidth
+              className="text-block-message"
             />
 
             {/* Bouton de soumission */}
             <Button
               type="submit"
-              variant="contained"
-              startIcon={<SendIcon />}
-            ></Button>
+              variant="text"
+              className="button-submit-message"
+            >
+              <SendIcon className="iconbutton" />
+            </Button>
           </Box>
         </Box>
       )}

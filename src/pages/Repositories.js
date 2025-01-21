@@ -1,4 +1,4 @@
-// import React, { useState, useEffect } from 'react';
+ //import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 // import Cookies from 'js-cookie';
 
@@ -283,15 +283,8 @@ import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
 
 const ExchangeData = () => {
-  const [organizations, setOrganizations] = useState([]);
-  const [filteredTeams, setFilteredTeams] = useState([]);
+
   const [filteredRepositories, setFilteredRepositories] = useState([]);
-  const [selectedOrganization, setSelectedOrganization] = useState("");
-  const [selectedTeams, setSelectedTeams] = useState("");
-  //const [bookName, setBookName] = useState(""); // Nom du livre (entrée manuelle)
-  //const [chapter, setChapter] = useState(""); // Chapitre
-  //const [verse, setVerse] = useState(""); // Verset
-  //const [nameProject, setNameProject] = useState(""); // Nom du projet (sélectionné)
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState(null);
@@ -337,46 +330,27 @@ const ExchangeData = () => {
   //     fetchOrganizations();
   // }, []);
   const { bcvRef } = useContext(bcvContext);
-
   const bookName = bcvRef.current.bookCode;
   const chapter = bcvRef.current.chapter;
   const verse = bcvRef.current.verse;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
 
-  const filterTeamsByOrganization = (orgUsername) => {
-    const selectedOrg = organizations.find(
-      (org) => org.username === orgUsername
-    );
-    setFilteredTeams(selectedOrg ? selectedOrg.teams || [] : []);
-    setSelectedTeams("");
-  };
-
-  const filterRepositoriesByOrganization = (orgUsername) => {
-    const selectedOrg = organizations.find(
-      (org) => org.username === orgUsername
-    );
-    setFilteredRepositories(selectedOrg ? selectedOrg.repositories || [] : []);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setMessage("");
-    setError(null);
-    setProjectNameError("");
 
+    
     const contributionData = {
       nameProject, // Projet sélectionné
       bookName, // Nom du livre (manuel)
       chapter, // Chapitre
       verse, // Verset
       description,
-      selectedTeams,
-      selectedOrganization,
       createdBy: username,
     };
-
+    
+ 
     try {
-      const response = await axios.post("/api/contributions", contributionData);
+      const response = await axios.post("http://192.168.1.35:4000/api/contributions", contributionData);
       setMessage(response.data.message || "Contribution créée avec succès !");
       resetForm();
     } catch (error) {
@@ -386,13 +360,7 @@ const ExchangeData = () => {
 
   const resetForm = () => {
     setDescription("");
-    //setBookName("");
-    //setChapter("");
-    //setVerse("");
-    setSelectedOrganization("");
     setError(null);
-    //setNameProject("");
-    setSelectedTeams("");
     setProjectNameError("");
   };
 
@@ -400,6 +368,11 @@ const ExchangeData = () => {
   const toggleForm = () => {
     setFormVisible((prevState) => !prevState);
   };
+
+  const handleChange = (event) => {
+    setDescription(event.target.value);
+  };
+
 
   return (
     <Box sx={{ maxWidth: 500, margin: "auto", padding: 3 }}>
@@ -473,6 +446,8 @@ const ExchangeData = () => {
             <TextField
               name="message"
               placeholder={`Send a message about ${nameProject}`}
+              value={description}
+              onChange={handleChange}
               multiline
               rows={4}
               fullWidth

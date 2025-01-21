@@ -20,6 +20,7 @@ const ProjectPage = () => {
 
     const navigate = useNavigate();
     const {bcvRef} =useContext(bcvContext);
+
     // useEffect(() => {
     //     const fetchData = async () => {
     //         const sessionToken = Cookies.get('session'); 
@@ -50,23 +51,35 @@ const ProjectPage = () => {
     //     fetchData();
     // }, []);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await fetchContributions(); // Appel direct de la fonction fetchContributions
+            } catch (error) {
+                console.error('Erreur lors de la récupération des contributions:', error);
+                setError('Erreur lors de la récupération des contributions.');
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchData();
+    }, []); // Appelé une seule fois après le rendu initial
+    
+
     const fetchContributions = async () => {
         try {
-            const response = await axios.get('/api/contributions');
-            const activeContributions = response.data.filter(contribution => contribution.statut !== 'cloture');
-            setContributions(activeContributions);
-            setActiveProjectCount(activeContributions.length);
-            setLoading(false);
+            const response = await axios.get('http://192.168.1.35:4000/api/contributions');
+            setContributions(response.data);
         } catch (error) {
             console.error('Erreur lors de la récupération des contributions:', error);
             setError('Erreur lors de la récupération des contributions.');
-            setLoading(false);
         }
     };
 
     const handleCloture = async (_id) => {
         try {
-            const response = await axios.post('/api/contributions/cloture', { _id });
+            const response = await axios.post('http://192.168.1.35:4000/api/contributions/cloture', { _id });
             if (response.data.success) {
                 setContributions(contributions.filter(contribution => contribution._id !== _id));
                 setActiveProjectCount(prevCount => prevCount - 1);
@@ -80,7 +93,7 @@ const ProjectPage = () => {
 
     const handleViewDiscussion = async (_id) => {
         try {
-            const response = await axios.get(`/api/contributions/${_id}/messages`);
+            const response = await axios.get(`http://192.168.1.35:4000/api/contributions/${_id}/messages`);
             setMessages(response.data); 
             setActiveDiscussionId(_id); 
         } catch (error) {
@@ -91,7 +104,7 @@ const ProjectPage = () => {
     const handleSendMessage = async () => {
         if (newMessage.trim() && activeDiscussionId && userData) {
             try {
-                const response = await axios.post(`/api/contributions/${activeDiscussionId}/messages`, {
+                const response = await axios.post(`http://192.168.1.35:4000/api/contributions/${activeDiscussionId}/messages`, {
                     author: userData,
                     content: newMessage,
                 });
@@ -125,10 +138,13 @@ const ProjectPage = () => {
         <div>
             <Navigation/>
             <p onClick={()=> postEmptyJson("/navigation/bcv/MRK/3/5")}>Do Bcv {JSON.stringify(bcvRef.current)}</p>
-            
             <ExchangeData />
 
-
+            {loading ? (
+                <p>Chargement des données...</p>
+            ) : error ? (
+                <p className="text-danger">{error}</p>
+            ) : (
                 <div>
                     <h1>Liste des Contributions</h1>
 
@@ -188,8 +204,6 @@ const ProjectPage = () => {
                                                     {groupedContributions[title].map(contribution => (
                                                         <div key={contribution._id}>
                                                             <div><strong>Nom du Livre :</strong> {contribution.bookName}</div>
-                                                            <div><strong>Créé par :</strong> {contribution.createdBy}</div>
-                                                            <div><strong>Équipe :</strong> {contribution.selectedTeams}</div>
                                                             <div><strong>Chapitre :</strong> {contribution.chapter}</div>
                                                             <div><strong>Verset :</strong> {contribution.verse}</div>
                                                             <div><strong>Date de création :</strong> {new Date(contribution.createdAt).toLocaleString('fr-FR', {
@@ -226,7 +240,7 @@ const ProjectPage = () => {
                         )
                     )}
                 </div>
-            
+            )}
         </div>
     );
 };

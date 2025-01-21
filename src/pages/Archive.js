@@ -13,7 +13,6 @@ const ArchivePage = () => {
     const [expandedChapterId, setExpandedChapterId] = useState(null); // Gérer l'expansion des chapitres avec ID unique
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
     const navigate = useNavigate(); // Hook de navigation
 
     useEffect(() => {
@@ -27,7 +26,7 @@ const ArchivePage = () => {
 
         const fetchArchivedContributions = async () => {
             try {
-                const response = await axios.get('/api/contributions/archived');
+                const response = await axios.get('http://192.168.1.35:4000/api/contributions/archived');
                 const grouped = groupArchivesByTitleAndProject(response.data); // Regrouper par selectedTitle et nameProject
                 setGroupedArchives(grouped);
                 setArchivedContributions(response.data);

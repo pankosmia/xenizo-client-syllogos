@@ -281,6 +281,8 @@ import { TextField, Button, Box, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
+import Discussion from "./Discussion";
+import ArchivePage from "./Archive";
 
 const ExchangeData = () => {
 
@@ -293,6 +295,8 @@ const ExchangeData = () => {
   const [username, setUsername] = useState("");
   const [formVisible, setFormVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("opened");
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
 
   // useEffect(() => {
   //     const fetchOrganizations = async () => {
@@ -374,6 +378,13 @@ const ExchangeData = () => {
   };
 
 
+  const handleSendMessage = () => {
+    if (newMessage.trim()) {
+        setMessages([...messages, { content: newMessage }]);
+        setNewMessage("");
+    }
+};
+
   return (
     <Box sx={{ maxWidth: 500, margin: "auto", padding: 3 }}>
       {/* Bouton pour ouvrir ou masquer le formulaire */}
@@ -416,13 +427,13 @@ const ExchangeData = () => {
             >
               <MessageIcon sx={{ marginRight: "8px" }} />
               {/* Ajoute un espace entre l'icône et le texte */}
-              Opened
+              OPEN
             </Typography>
 
             <Typography
               component="a"
               className="custom-button-page-project"
-              href="syllogos#/projects"
+              href="syllogos#/archives"
               onClick={() => setActiveTab("archived")}
               sx={{
                 color:
@@ -431,10 +442,10 @@ const ExchangeData = () => {
               }}
             >
               <ArchiveIcon sx={{ marginRight: "8px" }} />
-              Archived
+              RESOLVED
             </Typography>
           </Box>
-
+          <Discussion/>
           {/* Description */}
           <Box
             sx={{
@@ -446,8 +457,8 @@ const ExchangeData = () => {
             <TextField
               name="message"
               placeholder={`Send a message about ${nameProject}`}
-              value={description}
-              onChange={handleChange}
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
               multiline
               rows={4}
               fullWidth
@@ -468,7 +479,7 @@ const ExchangeData = () => {
               variant="text"
               className="button-submit-message"
             >
-              <SendIcon className="iconbutton" />
+              <SendIcon className="iconbutton" onClick={handleSendMessage}/>
             </Button>
           </Box>
         </Box>

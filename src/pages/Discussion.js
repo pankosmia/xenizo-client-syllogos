@@ -6,7 +6,7 @@ const Discussion = ({ nameProject, discussionId }) => {
 
     const handleSendMessage = () => {
         if (newMessage.trim()) {
-            setMessages([...messages, { author: "User", content: newMessage }]);
+            setMessages([...messages, { content: newMessage }]);
             setNewMessage("");
         }
     };
@@ -18,7 +18,7 @@ const Discussion = ({ nameProject, discussionId }) => {
                 {messages.length > 0 ? (
                     messages.map((message, index) => (
                         <div key={index}>
-                            <strong>{nameProject}:</strong> {message.author} : {message.content}
+                            <strong>{nameProject}:</strong> {message.content}
                         </div>
                     ))
                 ) : (

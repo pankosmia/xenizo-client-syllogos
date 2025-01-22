@@ -281,7 +281,6 @@ import { TextField, Button, Box, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import Discussion from "./Discussion";
 import ArchivePage from "./Archive";
 
 const ExchangeData = () => {
@@ -377,14 +376,6 @@ const ExchangeData = () => {
     setDescription(event.target.value);
   };
 
-
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-        setMessages([...messages, { content: newMessage }]);
-        setNewMessage("");
-    }
-};
-
   return (
     <Box sx={{ maxWidth: 500, margin: "auto", padding: 3 }}>
       {/* Bouton pour ouvrir ou masquer le formulaire */}
@@ -445,7 +436,7 @@ const ExchangeData = () => {
               RESOLVED
             </Typography>
           </Box>
-          <Discussion/>
+
           {/* Description */}
           <Box
             sx={{
@@ -457,8 +448,8 @@ const ExchangeData = () => {
             <TextField
               name="message"
               placeholder={`Send a message about ${nameProject}`}
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
+              value={description}
+              onChange={handleChange}
               multiline
               rows={4}
               fullWidth
@@ -479,7 +470,7 @@ const ExchangeData = () => {
               variant="text"
               className="button-submit-message"
             >
-              <SendIcon className="iconbutton" onClick={handleSendMessage}/>
+              <SendIcon className="iconbutton" />
             </Button>
           </Box>
         </Box>

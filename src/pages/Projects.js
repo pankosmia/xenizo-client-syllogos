@@ -14,7 +14,6 @@ import {
   CardActions,
   Divider,
   TextField,
-  CircularProgress,
 } from "@mui/material";
 import moment from "moment";
 
@@ -31,8 +30,7 @@ const ProjectPage = () => {
   const [userData, setUserData] = useState({ username: "" });
   const navigate = useNavigate();
   const { bcvRef } = useContext(bcvContext);
-  moment.locale('en'); // Définir la langue
-
+  moment.locale("en"); // Définir la langue
 
   // useEffect(() => {
   //     const fetchData = async () => {
@@ -88,7 +86,7 @@ const ProjectPage = () => {
         "http://192.168.1.34:4000/api/contributions"
       );
       setContributions(response.data);
-      setLoading(false)
+      setLoading(false);
     } catch (error) {
       console.error("Erreur lors de la récupération des contributions:", error);
       setError("Erreur lors de la récupération des contributions.");
@@ -146,14 +144,13 @@ const ProjectPage = () => {
     }
   };
   const groupedContributions = contributions?.length
-  ? contributions.reduce((acc, contribution) => {
-      const title = contribution.nameProject;
-      if (!acc[title]) acc[title] = [];
-      acc[title].push(contribution);
-      return acc;
-    }, {})
-  : {};
-
+    ? contributions.reduce((acc, contribution) => {
+        const title = contribution.nameProject;
+        if (!acc[title]) acc[title] = [];
+        acc[title].push(contribution);
+        return acc;
+      }, {})
+    : {};
 
   Object.keys(groupedContributions).forEach((title) => {
     groupedContributions[title].sort((a, b) =>
@@ -161,7 +158,9 @@ const ProjectPage = () => {
     );
   });
 
-  const formattedDate = moment(messages.createdAt).format('MMMM DD, YYYY [at] hh:mm A');
+  const formattedDate = moment(messages.createdAt).format(
+    "MMMM DD, YYYY [at] hh:mm A"
+  );
 
   return (
     <Box
@@ -203,8 +202,8 @@ const ProjectPage = () => {
             {messages.length > 0 ? (
               messages.map((message, index) => (
                 <Box key={index}>
-                  <strong> Loise  - {message.formattedDate} </strong> <br/>
-                  {message.content} 
+                  <strong> Loise - {message.formattedDate} </strong> <br />
+                  {message.content}
                 </Box>
               ))
             ) : (
@@ -270,10 +269,6 @@ const ProjectPage = () => {
                           <Typography variant="body2">
                             <strong>Nom de l'auteur:</strong>{" "}
                             {contribution.createdBy}
-                          </Typography>
-                          <Typography variant="body2">
-                            <strong>Description:</strong>{" "}
-                            {contribution.description}
                           </Typography>
                           <Typography variant="body2">
                             <strong>Date de création:</strong>{" "}

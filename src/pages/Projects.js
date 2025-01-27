@@ -29,7 +29,6 @@ const ProjectPage = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [userData, setUserData] = useState({ username: "" });
-
   const navigate = useNavigate();
   const { bcvRef } = useContext(bcvContext);
   moment.locale('en'); // Définir la langue
@@ -86,9 +85,10 @@ const ProjectPage = () => {
   const fetchContributions = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.1.35:4000/api/contributions"
+        "http://192.168.1.34:4000/api/contributions"
       );
       setContributions(response.data);
+      setLoading(false)
     } catch (error) {
       console.error("Erreur lors de la récupération des contributions:", error);
       setError("Erreur lors de la récupération des contributions.");
@@ -98,7 +98,7 @@ const ProjectPage = () => {
   const handleCloture = async (_id) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.35:4000/api/contributions/cloture",
+        "http://192.168.1.34:4000/api/contributions/cloture",
         { _id }
       );
       if (response.data.success) {
@@ -117,13 +117,13 @@ const ProjectPage = () => {
     }
   };
 
-  const handleViewDiscussion = async (_id) => {
+  const handleViewDiscussion = async (id) => {
     try {
       const response = await axios.get(
-        `http://192.168.1.35:4000/api/contributions/${_id}/messages`
+        `http://192.168.1.34:4000/api/contributions/${id}/messages`
       );
       setMessages(response.data);
-      setActiveDiscussionId(_id);
+      setActiveDiscussionId(id);
     } catch (error) {
       console.error("Erreur lors de la récupération des messages:", error);
     }
@@ -134,7 +134,7 @@ const ProjectPage = () => {
 
     try {
       const response = await axios.post(
-        `http://192.168.1.35:4000/api/contributions/${activeDiscussionId}/messages`,
+        `http://192.168.1.34:4000/api/contributions/${activeDiscussionId}/messages`,
         {
           content: newMessage,
         }
@@ -145,12 +145,15 @@ const ProjectPage = () => {
       console.error("Erreur lors de l'envoi du message:", error);
     }
   };
-  const groupedContributions = contributions.reduce((acc, contribution) => {
-    const title = contribution.nameProject;
-    if (!acc[title]) acc[title] = [];
-    acc[title].push(contribution);
-    return acc;
-  }, {});
+  const groupedContributions = contributions?.length
+  ? contributions.reduce((acc, contribution) => {
+      const title = contribution.nameProject;
+      if (!acc[title]) acc[title] = [];
+      acc[title].push(contribution);
+      return acc;
+    }, {})
+  : {};
+
 
   Object.keys(groupedContributions).forEach((title) => {
     groupedContributions[title].sort((a, b) =>
@@ -200,7 +203,7 @@ const ProjectPage = () => {
             {messages.length > 0 ? (
               messages.map((message, index) => (
                 <Box key={index}>
-                  <strong> Loise  - {formattedDate} </strong> <br/>
+                  <strong> Loise  - {message.formattedDate} </strong> <br/>
                   {message.content} 
                 </Box>
               ))

@@ -1,4 +1,4 @@
- //import React, { useState, useEffect } from 'react';
+//import React, { useState, useEffect } from 'react';
 // import axios from 'axios';
 // import Cookies from 'js-cookie';
 
@@ -282,9 +282,9 @@ import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import ArchivePage from "./Archive";
+import { ContributionsProvider } from "../ContributionContext";
 
 const ExchangeData = () => {
-
   const [filteredRepositories, setFilteredRepositories] = useState([]);
   const [description, setDescription] = useState("");
   const [message, setMessage] = useState("");
@@ -294,7 +294,6 @@ const ExchangeData = () => {
   const [username, setUsername] = useState("");
   const [formVisible, setFormVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("opened");
-  const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
   // useEffect(() => {
@@ -338,42 +337,34 @@ const ExchangeData = () => {
   const verse = bcvRef.current.verse;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
 
-  const handleSubmit = async (e) => {
+  const handleCreateConversation = async (e) => {
     e.preventDefault();
-
-    
-    const contributionData = {
-      nameProject, // Projet sélectionné
-      bookName, // Nom du livre (manuel)
-      chapter, // Chapitre
-      verse, // Verset
-      description,
-      createdBy: username,
+  
+    const newConversation = {
+      nameProject, // Nom du projet
+      description, // Description du projet
+      bookName,
+      chapter,
+      verse,
+      author: "Default Author", // Remplace par l'utilisateur connecté
+      content: newMessage, // Message initial saisi par l'utilisateur
+      createdAt: new Date(),
     };
-    
- 
+  
     try {
-      const response = await axios.post("http://192.168.1.35:4000/api/contributions", contributionData);
-      setMessage(response.data.message || "Contribution créée avec succès !");
-      resetForm();
+      const response = await axios.post(`http://192.168.1.34:4000/api/contributions`, newConversation);
+      console.log("Nouvelle contribution créée :", response.data);
+      setDescription(""); // Réinitialise la description
+      setNewMessage(""); // Réinitialise le message
+      setFormVisible(false); // Masque le formulaire après soumission
     } catch (error) {
-      setError("Erreur lors de la création de la contribution.");
+      console.error("Erreur lors de la création de la contribution :", error);
     }
   };
-
-  const resetForm = () => {
-    setDescription("");
-    setError(null);
-    setProjectNameError("");
-  };
-
+  
   // Fonction pour basculer l'affichage du formulaire
   const toggleForm = () => {
     setFormVisible((prevState) => !prevState);
-  };
-
-  const handleChange = (event) => {
-    setDescription(event.target.value);
   };
 
   return (
@@ -391,7 +382,7 @@ const ExchangeData = () => {
 
       {/* Si formVisible est vrai, afficher le formulaire */}
       {formVisible && (
-        <Box component="form" onSubmit={handleSubmit}>
+        <Box component="form" onSubmit={handleCreateConversation}>
           <Typography variant="h5" gutterBottom>
             {nameProject}
           </Typography>
@@ -413,7 +404,6 @@ const ExchangeData = () => {
                 color:
                   activeTab === "opened" ? "primary.main" : "text.secondary",
                 borderBottom: activeTab === "opened" ? "3px solid" : "none",
-        
               }}
             >
               <MessageIcon sx={{ marginRight: "8px" }} />
@@ -446,20 +436,38 @@ const ExchangeData = () => {
             }}
           >
             <TextField
-              name="message"
+              name="description"
               placeholder={`Send a message about ${nameProject}`}
               value={description}
-              onChange={handleChange}
+              onChange={(e) => setDescription(e.target.value)}
               multiline
               rows={4}
               fullWidth
               className="text-block-message"
               sx={{
-                '& .MuiOutlinedInput-root': {
-                  border: 'none', // Supprime le contour
+                "& .MuiOutlinedInput-root": {
+                  border: "none", // Supprime le contour
                 },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  border: 'none', // Supprime le contour principal
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none", // Supprime le contour principal
+                },
+              }}
+            />
+            <TextField
+              name="newMessage"
+              placeholder={`Send a message about ${nameProject}`}
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              multiline
+              rows={4}
+              fullWidth
+              className="text-block-message"
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  border: "none", // Supprime le contour
+                },
+                "& .MuiOutlinedInput-notchedOutline": {
+                  border: "none", // Supprime le contour principal
                 },
               }}
             />
@@ -469,6 +477,7 @@ const ExchangeData = () => {
               type="submit"
               variant="text"
               className="button-submit-message"
+              onClick={handleCreateConversation}
             >
               <SendIcon className="iconbutton" />
             </Button>

@@ -151,8 +151,7 @@ const ProjectPage = () => {
         return acc;
       }, {})
     : {};
-      console.log(groupedContributions);
-      
+
   Object.keys(groupedContributions).forEach((title) => {
     groupedContributions[title].sort((a, b) =>
       a.nameProject.localeCompare(b.nameProject)
@@ -243,6 +242,17 @@ const ProjectPage = () => {
                       {groupedContributions[title].map((contribution) => (
                         <Box key={contribution._id}>
                           <Divider sx={{ marginY: 2 }} />
+                          <Typography variant="body2">
+                            <strong>Nom de l'auteur:</strong>{" "}
+                            {contribution.createdBy}
+                          </Typography>
+                          <Typography variant="body2">
+                            <strong>Date de création:</strong>{" "}
+                            {new Date(contribution.createdAt).toLocaleString(
+                              "fr-FR"
+                            )}
+                          </Typography>
+
                           <CardActions>
                             <Button
                               onClick={() =>

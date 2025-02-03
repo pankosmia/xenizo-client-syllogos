@@ -2,16 +2,19 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { bcvContext, postEmptyJson } from "pithekos-lib";
-import { TextField, Button, Box, Typography } from "@mui/material";
+import { TextField, Button, Box, Typography, CardContent } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import ArchivePage from "./Archive";
 import { ContributionsProvider } from "../ContributionContext";
+import ProjectPage from "./Projects";
+import Navigation from "../components/Navigation";
+import moment from "moment";
 
 const ExchangeData = () => {
   const [filteredRepositories, setFilteredRepositories] = useState([]);
-  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState("");
   const [error, setError] = useState(null);
   const [projectNameError, setProjectNameError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -19,6 +22,20 @@ const ExchangeData = () => {
   const [formVisible, setFormVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("opened");
   const [newMessage, setNewMessage] = useState("");
+  const [contributions, setContributions] = useState([]);
+  const [activeProjectCount, setActiveProjectCount] = useState(0);
+  const [activeDiscussionId, setActiveDiscussionId] = useState(null);
+  moment.locale("fr"); // Définir la langue
+
+  const groupedContributions = contributions?.length
+    ? contributions.reduce((acc, contribution) => {
+        if (!acc[contribution.nameProject]) acc[contribution.nameProject] = [];
+        acc[contribution.nameProject].push(contribution);
+        return acc;
+      }, {})
+    : {};
+
+  console.log("groupe de contribution:", groupedContributions);
 
   // useEffect(() => {
   //     const fetchOrganizations = async () => {
@@ -61,9 +78,114 @@ const ExchangeData = () => {
   const verse = bcvRef.current.verse;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await fetchContributions(); // Appel direct de la fonction fetchContributions
+      } catch (error) {
+        console.error(
+          "Erreur lors de la récupération des contributions:",
+          error
+        );
+        setError("Erreur lors de la récupération des contributions.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []); // Appelé une seule fois après le rendu initial
+
+  const fetchContributions = async () => {
+    try {
+      const response = await axios.get(
+        "http://192.168.1.34:4000/api/contributions"
+      );
+      setContributions(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des contributions:", error);
+      setError("Erreur lors de la récupération des contributions.");
+    }
+  };
+
+  const handleCloture = async (_id) => {
+    try {
+      const response = await axios.post(
+        "http://192.168.1.34:4000/api/contributions/cloture",
+        { _id }
+      );
+      if (response.data.success) {
+        setContributions(
+          contributions.filter((contribution) => contribution._id !== _id)
+        );
+        setActiveProjectCount((prevCount) => prevCount - 1);
+      } else {
+        console.error(
+          "Erreur lors de la clôture de la contribution:",
+          response.data.error
+        );
+      }
+    } catch (error) {
+      console.error("Erreur lors de la requête de clôture:", error);
+    }
+  };
+  useEffect(() => {
+    let interval;
+    if (activeDiscussionId) {
+      interval = setInterval(() => {
+        fetchMessages(activeDiscussionId);
+      }, 3000); // Met à jour les messages toutes les 3 secondes
+    }
+    return () => clearInterval(interval);
+  }, [activeDiscussionId]);
+
+  const fetchMessages = async (id) => {
+    try {
+      const response = await axios.get(
+        `http://192.168.1.34:4000/api/contributions/${id}/messages`
+      );
+      setMessages(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des messages:", error);
+    }
+  };
+
+  const handleViewDiscussion = async (id) => {
+    setActiveDiscussionId(id);
+    await fetchMessages(id);
+  };
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim()) return;
+
+    try {
+      const response = await axios.post(
+        `http://192.168.1.34:4000/api/contributions/${activeDiscussionId}/messages`,
+        {
+          content: newMessage,
+        }
+      );
+      setMessages((prev) => [...prev, response.data]);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Erreur lors de l'envoi du message:", error);
+    }
+  };
+
+  Object.keys(groupedContributions).forEach((nameProject) => {
+    groupedContributions[nameProject].sort((a, b) =>
+      a.nameProject.localeCompare(b.nameProject)
+    );
+  });
+
+  const formattedDate = moment(messages.createdAt).isValid()
+    ? moment(messages.createdAt).format("MMMM DD, YYYY [at] hh:mm A")
+    : "Date invalide";
+
   const handleCreateConversation = async (e) => {
     e.preventDefault();
-  
+
     const newConversation = {
       nameProject, // Nom du projet
       bookName,
@@ -73,9 +195,11 @@ const ExchangeData = () => {
       content: newMessage, // Message initial saisi par l'utilisateur
       createdAt: new Date(),
     };
-  
     try {
-      const response = await axios.post(`http://192.168.1.34:4000/api/contributions`, newConversation);
+      const response = await axios.post(
+        `http://192.168.1.34:4000/api/contributions`,
+        newConversation
+      );
       console.log("Nouvelle contribution créée :", response.data);
       setNewMessage(""); // Réinitialise le message
       setFormVisible(false); // Masque le formulaire après soumission
@@ -83,80 +207,154 @@ const ExchangeData = () => {
       console.error("Erreur lors de la création de la contribution :", error);
     }
   };
-  
-  // Fonction pour basculer l'affichage du formulaire
-  const toggleForm = () => {
-    setFormVisible((prevState) => !prevState);
-  };
 
   return (
     <Box sx={{ maxWidth: 500, margin: "auto", padding: 3 }}>
-      {/* Bouton pour ouvrir ou masquer le formulaire */}
-      <Button
-        variant="contained"
-        onClick={toggleForm}
-        fullWidth
-        sx={{ marginBottom: 2 }}
-        className="custom-createproject"
+      <Navigation />
+
+      {/* Conteneur principal */}
+      <Box
+        sx={{
+          border: "1px solid #ddd",
+          padding: 2,
+          borderRadius: 2,
+          backgroundColor: "#f9f9f9",
+        }}
       >
-        {formVisible ? "Masquer le formulaire" : "Créer une contribution"}
-      </Button>
+        {/* Titre du projet */}
+        <Typography variant="h5" gutterBottom>
+          {nameProject}
+        </Typography>
 
-      {/* Si formVisible est vrai, afficher le formulaire */}
-      {formVisible && (
-        <Box component="form" onSubmit={handleCreateConversation}>
-          <Typography variant="h5" gutterBottom>
-            {nameProject}
+        {/* Boutons OPEN et RESOLVED */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            marginBottom: 2,
+          }}
+        >
+          <Typography
+            component="a"
+            href="syllogos#/projects"
+            className="custom-button-page-project"
+            onClick={() => setActiveTab("opened")}
+            sx={{
+              color: activeTab === "opened" ? "primary.main" : "text.secondary",
+              borderBottom: activeTab === "opened" ? "3px solid" : "none",
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+          >
+            <MessageIcon sx={{ marginRight: "8px" }} /> OPEN
           </Typography>
-          <Box
+
+          <Typography
+            component="a"
+            className="custom-button-page-project"
+            href="syllogos#/archives"
+            onClick={() => setActiveTab("archived")}
             sx={{
-              display: "flex", // Active Flexbox
-              justifyContent: "space-between", // Écarte les éléments (gauche et droite)
-              alignItems: "flex-start", // Aligne verticalement les éléments
-              padding: "10px", // Ajoute un peu de marge intérieure
-              border: "none", // (Optionnel) Bordure pour visualiser la disposition
+              color:
+                activeTab === "archived" ? "primary.main" : "text.secondary",
+              borderBottom: activeTab === "archived" ? "3px solid" : "none",
+              display: "flex",
+              alignItems: "center",
+              cursor: "pointer",
             }}
           >
-            <Typography
-              component="a"
-              href="syllogos#/projects"
-              className="custom-button-page-project"
-              onClick={() => setActiveTab("opened")}
-              sx={{
-                color:
-                  activeTab === "opened" ? "primary.main" : "text.secondary",
-                borderBottom: activeTab === "opened" ? "3px solid" : "none",
-              }}
-            >
-              <MessageIcon sx={{ marginRight: "8px" }} />
-              {/* Ajoute un espace entre l'icône et le texte */}
-              OPEN
-            </Typography>
+            <ArchiveIcon sx={{ marginRight: "8px" }} /> RESOLVED
+          </Typography>
+        </Box>
 
-            <Typography
-              component="a"
-              className="custom-button-page-project"
-              href="syllogos#/archives"
-              onClick={() => setActiveTab("archived")}
-              sx={{
-                color:
-                  activeTab === "archived" ? "primary.main" : "text.secondary",
-                borderBottom: activeTab === "archived" ? "3px solid" : "none",
-              }}
-            >
-              <ArchiveIcon sx={{ marginRight: "8px" }} />
-              RESOLVED
-            </Typography>
-          </Box>
+        {/* Liste des contributions (en dessous de OPEN & RESOLVED) */}
+        <CardContent>
+          {activeDiscussionId ? (
+            <Box>
+              <Button
+                onClick={() => setActiveDiscussionId(null)}
+                variant="outlined"
+                color="primary"
+              >
+                Retour
+              </Button>
+              <Typography variant="h5" align="center" gutterBottom>
+                Discussion
+              </Typography>
 
-          {/* Description */}
-          <Box
-            sx={{
-              display: "flex", // Flexbox pour aligner en ligne
-              alignItems: "end", // Centrer verticalement
-              gap: 1, // Espacement entre les éléments
-            }}
-          >
+              <Box
+                sx={{
+                  maxHeight: 300,
+                  overflowY: "auto",
+                  border: "1px solid #ccc",
+                  padding: 2,
+                }}
+              >
+                {messages.length > 0 ? (
+                  messages.map((message, index) => {
+                    const formattedDate = moment(message.createdAt).isValid()
+                      ? moment(message.createdAt).format(
+                          "MMMM DD, YYYY [at] hh:mm A"
+                        )
+                      : "Date invalide"; // Formater chaque message
+
+                    return (
+                      <Box key={index} sx={{ marginBottom: 1 }}>
+                        <strong> Loise - {formattedDate} </strong> <br />
+                        {message.content}
+                      </Box>
+                    );
+                  })
+                ) : (
+                  <Typography variant="body2" color="textSecondary">
+                    Aucun message pour cette discussion.
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          ) : (
+            // Liste des contributions regroupées par projet
+            Object.keys(groupedContributions).map((projectTitle) => (
+              <Box key={projectTitle} sx={{ marginBottom: 2 }}>
+                <Typography variant="h6">{projectTitle}</Typography>
+                {groupedContributions[projectTitle].map((contribution) => (
+                  <Box
+                    key={contribution._id}
+                    sx={{ display: "flex", gap: 1, marginBottom: 1 }}
+                    onChange={() => handleViewDiscussion(contribution._id)}
+                  >
+                    <Button
+                      onClick={() => handleViewDiscussion(contribution._id)}
+                      size="small"
+                      color="primary"
+                    >
+                      Afficher
+                    </Button>
+                    {contribution.statut !== "cloture" && (
+                      <Button
+                        onClick={() => handleCloture(contribution._id)}
+                        size="small"
+                        color="secondary"
+                      >
+                        Clôturer
+                      </Button>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            ))
+          )}
+        </CardContent>
+
+        {/* Formulaire toujours visible (placé en bas maintenant) */}
+        <Box
+          component="form"
+          onSubmit={handleCreateConversation}
+          sx={{ marginTop: 2 }}
+        >
+          {/* Champ de saisie du message */}
+          <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
             <TextField
               name="newMessage"
               placeholder={`Send a message about ${nameProject}`}
@@ -167,27 +365,20 @@ const ExchangeData = () => {
               fullWidth
               className="text-block-message"
               sx={{
-                "& .MuiOutlinedInput-root": {
-                  border: "none", // Supprime le contour
-                },
-                "& .MuiOutlinedInput-notchedOutline": {
-                  border: "none", // Supprime le contour principal
-                },
+                "& .MuiOutlinedInput-root": { border: "none" },
+                "& .MuiOutlinedInput-notchedOutline": { border: "none" },
               }}
             />
-
-            {/* Bouton de soumission */}
             <Button
               type="submit"
               variant="text"
               className="button-submit-message"
-              onClick={handleCreateConversation}
             >
               <SendIcon className="iconbutton" />
             </Button>
           </Box>
         </Box>
-      )}
+      </Box>
     </Box>
   );
 };

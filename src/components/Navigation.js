@@ -30,6 +30,10 @@ function Navigation() {
           color: location.pathname === '/profile' ? 'black' : 'white', }}>
            Profil
           </Button>
+          <Button color="inherit" component={Link} to="/contribution" sx={{
+          color: location.pathname === '/contribution' ? 'black' : 'white', }}>
+            Contribution
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>

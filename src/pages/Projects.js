@@ -1,10 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
-import ExchangeData from "./Repositories";
-import Navigation from "../components/Navigation";
-import { bcvContext, postEmptyJson } from "pithekos-lib";
+import { bcvContext} from "pithekos-lib";
 import {
   Button,
   Typography,
@@ -13,7 +9,6 @@ import {
   CardContent,
   CardActions,
   Divider,
-  TextField,
 } from "@mui/material";
 import moment from "moment";
 
@@ -22,13 +17,9 @@ const ProjectPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedTitle, setExpandedTitle] = useState(null);
-  const [expandedBook, setExpandedBook] = useState(null);
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
-  const [userData, setUserData] = useState({ username: "" });
-  const navigate = useNavigate();
   const { bcvRef } = useContext(bcvContext);
   moment.locale("en"); // Définir la langue
 
@@ -127,22 +118,6 @@ const ProjectPage = () => {
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
-
-    try {
-      const response = await axios.post(
-        `http://192.168.1.34:4000/api/contributions/${activeDiscussionId}/messages`,
-        {
-          content: newMessage,
-        }
-      );
-      setMessages((prev) => [...prev, response.data]);
-      setNewMessage("");
-    } catch (error) {
-      console.error("Erreur lors de l'envoi du message:", error);
-    }
-  };
   const groupedContributions = contributions?.length
     ? contributions.reduce((acc, contribution) => {
         const title = contribution.nameProject;
@@ -152,7 +127,7 @@ const ProjectPage = () => {
       }, {})
     : {};
       console.log(groupedContributions);
-      
+
   Object.keys(groupedContributions).forEach((title) => {
     groupedContributions[title].sort((a, b) =>
       a.nameProject.localeCompare(b.nameProject)
@@ -221,16 +196,6 @@ const ProjectPage = () => {
                       {projectCount} projet(s)
                     </Typography>
                   </CardContent>
-                  <CardActions>
-                    <Button
-                      size="small"
-                      onClick={() =>
-                        setExpandedTitle(expandedTitle === title ? null : title)
-                      }
-                    >
-                      {expandedTitle === title ? "▲" : "▼"} Détails
-                    </Button>
-                  </CardActions>
                   {expandedTitle === title && (
                     <Box
                       sx={{

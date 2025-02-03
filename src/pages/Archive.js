@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-import Navigation from "../components/Navigation";
 //import '../styles/App.css';
 import { Box, Typography, Button, Collapse } from "@mui/material";
 import moment from "moment";
@@ -11,15 +9,13 @@ import moment from "moment";
 const ArchivePage = () => {
   const [archivedContributions, setArchivedContributions] = useState([]);
   const [groupedArchives, setGroupedArchives] = useState({});
-  const [expandedArchive, setExpandedArchive] = useState(null); // Gérer l'expansion des titres
-  const [expandedProject, setExpandedProject] = useState(null); // Gérer l'expansion des projets
-  const [expandedChapterId, setExpandedChapterId] = useState(null); // Gérer l'expansion des chapitres avec ID unique
+  const [expandedArchive, setExpandedArchive] = useState(null); 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  moment.locale('en'); // Définir la langue 
+  moment.locale('en'); 
+  const navigate = useNavigate(); 
 
-  const navigate = useNavigate(); // Hook de navigation
   useEffect(() => {
     // const sessionToken = Cookies.get('session'); // Vérification du cookie de session
 
@@ -32,7 +28,7 @@ const ArchivePage = () => {
     const fetchArchivedContributions = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.1.35:4000/api/contributions/archived"
+          "http://192.168.1.34:4000/api/contributions/archived"
         );
         const grouped = groupArchivesByTitleAndProject(response.data); // Regrouper par selectedTitle et nameProject
         setGroupedArchives(grouped);
@@ -68,188 +64,78 @@ const ArchivePage = () => {
     setExpandedArchive((prevTitle) => (prevTitle === title ? null : title));
   };
 
-  const toggleProjectExpansion = (title, projectName) => {
-    setExpandedProject((prevProject) =>
-      prevProject === `${title}-${projectName}`
-        ? null
-        : `${title}-${projectName}`
-    );
-  };
-
-  const toggleChapterExpansion = (chapterId) => {
-    setExpandedChapterId((prevId) => (prevId === chapterId ? null : chapterId));
-  };
-  
-  const formattedDate = moment(messages.createdAt).format('MMMM DD, YYYY [at] hh:mm A');
-
   return (
-    <Box sx={{ padding: 4 }}>
-      {error && <Typography color="error">{error}</Typography>}
-      <Navigation />
-      {Object.keys(groupedArchives).length > 0 ? (
-        Object.keys(groupedArchives).map((title) => {
-          const nameProject = Object.keys(groupedArchives[title]);
-          const archiveCount = nameProject.length;
-          console.log(groupedArchives);
-
-          return (
-            <Box key={title} sx={{ marginBottom: 3 }}>
+      <Box sx={{ padding: 4 }}>
+        {error && <Typography color="error">{error}</Typography>}
+        {Object.keys(groupedArchives).length > 0 ? (
+          Object.keys(groupedArchives).map((projectTitle) => (
+            <Box key={projectTitle} sx={{ marginBottom: 3 }}>
+              {/* En-tête cliquable pour toggler l'affichage du projet */}
               <Box
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
                   cursor: "pointer",
+                  bgcolor: "grey.100",
+                  p: 1,
+                  borderRadius: 1,
                 }}
-                onClick={() => toggleArchiveExpansion(title)}
+                onClick={() => toggleArchiveExpansion(projectTitle)}
               >
-                <Typography variant="h6">Projet : {title}</Typography>
-                <Button>{expandedArchive === title ? "▲" : "▼"}</Button>
+                <Typography variant="h6">Projet : {projectTitle}</Typography>
+                <Button size="small">
+                  {expandedArchive === projectTitle ? "▲" : "▼"}
+                </Button>
               </Box>
-
-              <Collapse in={expandedArchive === title}>
-                <Box sx={{ marginLeft: 2 }}>
-                  {Object.keys(groupedArchives[title]).map((projectName) => (
-                    <Box
-                      key={projectName}
-                      sx={{
-                        marginBottom: 2,
-                        overflowY: "auto",
-                        padding: 2,
-                        bgcolor: "background.default",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        
-                        }}
-                        onClick={() =>
-                          toggleProjectExpansion(title, projectName)
-                        }
-                      >
-                        <Typography variant="body1">
-                          {projectName} <span>({archiveCount} projets)</span>{" "}
+    
+              {/* Contenu collapsible contenant les discussions pour le projet */}
+              <Collapse in={expandedArchive === projectTitle}>
+                {Object.keys(groupedArchives[projectTitle]).map((subProject) =>
+                  groupedArchives[projectTitle][subProject].map((archive) => (
+                    <Box key={archive._id} sx={{ marginBottom: 2, paddingLeft: 2 }}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        Messages :
+                      </Typography>
+                      {archive.messages && archive.messages.length > 0 ? (
+                        archive.messages.map((message, index) => {
+                          const formattedDate = moment(message.createdAt).isValid()
+                            ? moment(message.createdAt).format(
+                                "MMMM DD, YYYY [at] hh:mm A"
+                              )
+                            : "Date invalide";
+                          return (
+                            <Box key={index} sx={{ marginBottom: 1 }}>
+                              <Typography variant="body2">
+                                <strong>
+                                  {message.author} - {formattedDate}
+                                </strong>
+                              </Typography>
+                              <Typography variant="body2">
+                                {message.content}
+                              </Typography>
+                            </Box>
+                          );
+                        })
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">
+                          Aucun message pour ce chapitre.
                         </Typography>
-                        <Button>
-                          {expandedProject === `${title}-${projectName}`
-                            ? "▲"
-                            : "▼"}
-                        </Button>
-                      </Box>
-
-                      <Collapse
-                        in={expandedProject === `${title}-${projectName}`}
-                      >
-                        <Box
-                          sx={{
-                            marginLeft: 2,
-                            cursor: "pointer",
-                            height: "80vh",
-                            overflowY: "auto",
-                            padding: 2,
-                            bgcolor: "background.default",
-                          }}
-                        >
-                          {groupedArchives[title][projectName].map(
-                            (archive) => (
-                              <Box key={archive._id} sx={{ marginBottom: 2 }}>
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    marginLeft: 2,
-                                    overflowY: "auto",
-                                  }}
-                                >
-                                  <Typography variant="body2">
-                                    Chapitre {archive.chapter} , Verset{" "}
-                                    {archive.verse}
-                                  </Typography>
-                                  <Button
-                                    onClick={() =>
-                                      toggleChapterExpansion(archive._id)
-                                    }
-                                    variant="outlined"
-                                    size="small"
-                                  >
-                                    {expandedChapterId === archive._id
-                                      ? "▲"
-                                      : "▼"}{" "}
-                                    Voir
-                                  </Button>
-                                </Box>
-
-                                <Collapse
-                                  in={expandedChapterId === archive._id}
-                                >
-                                  <Box sx={{ marginTop: 2 }}>
-                                    <Typography variant="subtitle2">
-                                      Messages :
-                                    </Typography>
-                                    {archive.messages.length > 0 ? (
-                                      <Box
-                                        sx={{
-                                          maxHeight: "200px",
-                                          overflowY: "auto",
-                                          border: "1px solid #ccc",
-                                          padding: 2,
-                                          marginTop: 1,
-                                        }}
-                                      >
-                                        {archive.messages.map(
-                                          (message, index) => (
-                                            <Box
-                                              key={index}
-                                              sx={{ marginBottom: 1 }}
-                                            >
-                                              <Typography variant="body2">
-                                                <strong>
-                                                  {message.author} :
-                                                </strong>{" "}
-                                                {message.content}
-                                              </Typography>
-                                              <Typography
-                                                variant="caption"
-                                                color="textSecondary"
-                                              >
-                                                {formattedDate}
-                                              </Typography>
-                                            </Box>
-                                          )
-                                        )}
-                                      </Box>
-                                    ) : (
-                                      <Typography
-                                        variant="body2"
-                                        color="textSecondary"
-                                      >
-                                        Aucun message pour ce chapitre.
-                                      </Typography>
-                                    )}
-                                  </Box>
-                                </Collapse>
-                              </Box>
-                            )
-                          )}
-                        </Box>
-                      </Collapse>
+                      )}
                     </Box>
-                  ))}
-                </Box>
+                  ))
+                )}
               </Collapse>
             </Box>
-          );
-        })
-      ) : (
-        <Typography variant="body1" align="center" color="textSecondary">
-          Aucune archive trouvée.
-        </Typography>
-      )}
-    </Box>
-  );
+          ))
+        ) : (
+          <Typography variant="body1" align="center" color="textSecondary">
+            Aucune archive trouvée.
+          </Typography>
+        )}
+      </Box>
+    );
+    
 };
 
 export default ArchivePage;

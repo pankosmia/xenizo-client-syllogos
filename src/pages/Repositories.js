@@ -209,178 +209,174 @@ const ExchangeData = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 500, margin: "auto", padding: 3 }}>
-      <Navigation />
-
-      {/* Conteneur principal */}
-      <Box
-        sx={{
-          border: "1px solid #ddd",
-          padding: 2,
-          borderRadius: 2,
-          backgroundColor: "#f9f9f9",
-        }}
-      >
-        {/* Titre du projet */}
-        <Typography variant="h5" gutterBottom>
-          {nameProject}
-        </Typography>
-
-        {/* Boutons OPEN et RESOLVED */}
+      <Box sx={{ maxWidth: 800, margin: "auto", padding: 3 }}>
+        <Navigation />
+    
+        {/* Conteneur principal */}
         <Box
           sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            marginBottom: 2,
+            border: "1px solid #ddd",
+            padding: 2,
+            borderRadius: 2,
+            backgroundColor: "#f9f9f9",
           }}
         >
-          <Typography
-            component="a"
-            href="syllogos#/projects"
-            className="custom-button-page-project"
-            onClick={() => setActiveTab("opened")}
+          {/* Titre du projet */}
+          <Typography variant="h5" gutterBottom>
+            {nameProject}
+          </Typography>
+    
+          {/* Boutons OPEN et RESOLVED */}
+          <Box
             sx={{
-              color: activeTab === "opened" ? "primary.main" : "text.secondary",
-              borderBottom: activeTab === "opened" ? "3px solid" : "none",
               display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
+              justifyContent: "space-between",
+              marginBottom: 2,
             }}
           >
-            <MessageIcon sx={{ marginRight: "8px" }} /> OPEN
-          </Typography>
-
-          <Typography
-            component="a"
-            className="custom-button-page-project"
-            href="syllogos#/archives"
-            onClick={() => setActiveTab("archived")}
-            sx={{
-              color:
-                activeTab === "archived" ? "primary.main" : "text.secondary",
-              borderBottom: activeTab === "archived" ? "3px solid" : "none",
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-          >
-            <ArchiveIcon sx={{ marginRight: "8px" }} /> RESOLVED
-          </Typography>
-        </Box>
-
-        {/* Liste des contributions (en dessous de OPEN & RESOLVED) */}
-        <CardContent>
-          {activeDiscussionId ? (
-            <Box>
-              <Button
-                onClick={() => setActiveDiscussionId(null)}
-                variant="outlined"
-                color="primary"
-              >
-                Retour
-              </Button>
-              <Typography variant="h5" align="center" gutterBottom>
-                Discussion
-              </Typography>
-
-              <Box
-                sx={{
-                  maxHeight: 300,
-                  overflowY: "auto",
-                  border: "1px solid #ccc",
-                  padding: 2,
-                }}
-              >
-                {messages.length > 0 ? (
-                  messages.map((message, index) => {
-                    const formattedDate = moment(message.createdAt).isValid()
-                      ? moment(message.createdAt).format(
-                          "MMMM DD, YYYY [at] hh:mm A"
-                        )
-                      : "Date invalide"; // Formater chaque message
-
-                    return (
-                      <Box key={index} sx={{ marginBottom: 1 }}>
-                        <strong> Loise - {formattedDate} </strong> <br />
-                        {message.content}
-                      </Box>
-                    );
-                  })
-                ) : (
-                  <Typography variant="body2" color="textSecondary">
-                    Aucun message pour cette discussion.
-                  </Typography>
-                )}
-              </Box>
-            </Box>
+            <Typography
+              component="a"
+              href="syllogos#/projects"
+              className="custom-button-page-project"
+              onClick={() => setActiveTab("opened")}
+              sx={{
+                color: activeTab === "opened" ? "primary.main" : "text.secondary",
+                borderBottom: activeTab === "opened" ? "3px solid" : "none",
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              <MessageIcon sx={{ marginRight: "8px" }} /> OPEN
+            </Typography>
+    
+            <Typography
+              component="a"
+              className="custom-button-page-project"
+              onClick={() => setActiveTab("archived")}
+              sx={{
+                color: activeTab === "archived" ? "primary.main" : "text.secondary",
+                borderBottom: activeTab === "archived" ? "3px solid" : "none",
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+              }}
+            >
+              <ArchiveIcon sx={{ marginRight: "8px" }} /> RESOLVED
+            </Typography>
+          </Box>
+    
+          {activeTab === "archived" ? (
+            <ArchivePage />
           ) : (
-            // Liste des contributions regroupées par projet
-            Object.keys(groupedContributions).map((projectTitle) => (
-              <Box key={projectTitle} sx={{ marginBottom: 2 }}>
-                <Typography variant="h6">{projectTitle}</Typography>
-                {groupedContributions[projectTitle].map((contribution) => (
-                  <Box
-                    key={contribution._id}
-                    sx={{ display: "flex", gap: 1, marginBottom: 1 }}
-                    onChange={() => handleViewDiscussion(contribution._id)}
+            
+            <CardContent>
+              {activeDiscussionId ? (
+                <Box>
+                  <Button
+                    onClick={() => setActiveDiscussionId(null)}
+                    variant="outlined"
+                    color="primary"
                   >
-                    <Button
-                      onClick={() => handleViewDiscussion(contribution._id)}
-                      size="small"
-                      color="primary"
-                    >
-                      Afficher
-                    </Button>
-                    {contribution.statut !== "cloture" && (
-                      <Button
-                        onClick={() => handleCloture(contribution._id)}
-                        size="small"
-                        color="secondary"
-                      >
-                        Clôturer
-                      </Button>
+                    Retour
+                  </Button>
+                  <Typography variant="h5" align="center" gutterBottom>
+                    Discussion
+                  </Typography>
+                  <Box
+                    sx={{
+                      maxHeight: 300,
+                      overflowY: "auto",
+                      border: "1px solid #ccc",
+                      padding: 2,
+                    }}
+                  >
+                    {messages.length > 0 ? (
+                      messages.map((message, index) => {
+                        const formattedDate = moment(message.createdAt).isValid()
+                          ? moment(message.createdAt).format(
+                              "MMMM DD, YYYY [at] hh:mm A"
+                            )
+                          : "Date invalide";
+                        return (
+                          <Box key={index} sx={{ marginBottom: 1 }}>
+                            <strong>Loise - {formattedDate}</strong>
+                            <br />
+                            {message.content}
+                          </Box>
+                        );
+                      })
+                    ) : (
+                      <Typography variant="body2" color="textSecondary">
+                        Aucun message pour cette discussion.
+                      </Typography>
                     )}
                   </Box>
-                ))}
-              </Box>
-            ))
+                </Box>
+              ) : (
+                Object.keys(groupedContributions).map((projectTitle) => (
+                  <Box key={projectTitle} sx={{ marginBottom: 2 }}>
+                    <Typography variant="h6">{projectTitle}</Typography>
+                    {groupedContributions[projectTitle].map((contribution) => (
+                      <Box
+                        key={contribution._id}
+                        sx={{ display: "flex", gap: 1, marginBottom: 1 }}
+                        onChange={() => handleViewDiscussion(contribution._id)}
+                      >
+                        <Button
+                          onClick={() => handleViewDiscussion(contribution._id)}
+                          size="small"
+                          color="primary"
+                        >
+                          Afficher
+                        </Button>
+                        {contribution.statut !== "cloture" && (
+                          <Button
+                            onClick={() => handleCloture(contribution._id)}
+                            size="small"
+                            color="secondary"
+                          >
+                            Clôturer
+                          </Button>
+                        )}
+                      </Box>
+                    ))}
+                  </Box>
+                ))
+              )}
+            </CardContent>
           )}
-        </CardContent>
-
-        {/* Formulaire toujours visible (placé en bas maintenant) */}
-        <Box
-          component="form"
-          onSubmit={handleCreateConversation}
-          sx={{ marginTop: 2 }}
-        >
-          {/* Champ de saisie du message */}
-          <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
-            <TextField
-              name="newMessage"
-              placeholder={`Send a message about ${nameProject}`}
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              multiline
-              rows={4}
-              fullWidth
-              className="text-block-message"
-              sx={{
-                "& .MuiOutlinedInput-root": { border: "none" },
-                "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-              }}
-            />
-            <Button
-              type="submit"
-              variant="text"
-              className="button-submit-message"
-            >
-              <SendIcon className="iconbutton" />
-            </Button>
+    
+          {/* Formulaire toujours visible (placé en bas) */}
+          <Box
+            component="form"
+            onSubmit={handleCreateConversation}
+            sx={{ marginTop: 2 }}
+          >
+            <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
+              <TextField
+                name="newMessage"
+                placeholder={`Send a message about ${nameProject}`}
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                multiline
+                rows={4}
+                fullWidth
+                className="text-block-message"
+                sx={{
+                  "& .MuiOutlinedInput-root": { border: "none" },
+                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                }}
+              />
+              <Button type="submit" variant="text" className="button-submit-message">
+                <SendIcon className="iconbutton" />
+              </Button>
+            </Box>
           </Box>
         </Box>
       </Box>
-    </Box>
-  );
+    );
+    
 };
 
 export default ExchangeData;

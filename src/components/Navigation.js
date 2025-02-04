@@ -4,34 +4,63 @@ import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { Link, useLocation } from "react-router-dom";
-import '../index.css';
+import "../index.css";
 
 function Navigation() {
-
-  const location = useLocation()
+  const location = useLocation();
 
   return (
     <AppBar position="static" className="custom-appbar">
       <Toolbar>
         <Box>
-          <Button color="inherit" component={Link} to="/"  sx={{
-          color: location.pathname === '/' ? 'black' : 'white', }}>
-          Page d'accueil
+          <Button
+            color="inherit"
+            component={Link}
+            to="/"
+            sx={{
+              color: location.pathname === "/" ? "black" : "white",
+            }}
+          >
+            Page d'accueil
           </Button>
-          <Button color="inherit" component={Link} to="/projects" sx={{
-          color: location.pathname === '/projects' ? 'black' : 'white', }} >
-           Projets
+          <Button
+            color="inherit"
+            component={Link}
+            to="/projects"
+            sx={{
+              color: location.pathname === "/projects" ? "black" : "white",
+            }}
+          >
+            Projets
           </Button>
-          <Button color="inherit" component={Link} to="/archives" sx={{
-          color: location.pathname === '/archives' ? 'black' : 'white', }}>
-          Archives
+          <Button
+            color="inherit"
+            component={Link}
+            to="/archives"
+            sx={{
+              color: location.pathname === "/archives" ? "black" : "white",
+            }}
+          >
+            Archives
           </Button>
-          <Button color="inherit" component={Link} to="/profile" sx={{
-          color: location.pathname === '/profile' ? 'black' : 'white', }}>
-           Profil
+          <Button
+            color="inherit"
+            component={Link}
+            to="/profile"
+            sx={{
+              color: location.pathname === "/profile" ? "black" : "white",
+            }}
+          >
+            Profil
           </Button>
-          <Button color="inherit" component={Link} to="/contribution" sx={{
-          color: location.pathname === '/contribution' ? 'black' : 'white', }}>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/contribution"
+            sx={{
+              color: location.pathname === "/contribution" ? "black" : "white",
+            }}
+          >
             Contribution
           </Button>
         </Box>

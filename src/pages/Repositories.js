@@ -14,18 +14,18 @@ import moment from "moment";
 
 const ExchangeData = () => {
   const [filteredRepositories, setFilteredRepositories] = useState([]);
+  const [filteredContributions, setFilteredContributions] = useState([]);
   const [messages, setMessages] = useState("");
   const [error, setError] = useState(null);
   const [projectNameError, setProjectNameError] = useState("");
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");
-  const [formVisible, setFormVisible] = useState(false);
   const [activeTab, setActiveTab] = useState("opened");
   const [newMessage, setNewMessage] = useState("");
   const [contributions, setContributions] = useState([]);
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
-  moment.locale("fr"); // Définir la langue
+  moment.locale("en");
 
   const groupedContributions = contributions?.length
     ? contributions.reduce((acc, contribution) => {
@@ -35,7 +35,7 @@ const ExchangeData = () => {
       }, {})
     : {};
 
-  console.log("groupe de contribution:", groupedContributions);
+  //console.log("groupe de contribution:", groupedContributions);
 
   // useEffect(() => {
   //     const fetchOrganizations = async () => {
@@ -72,16 +72,18 @@ const ExchangeData = () => {
 
   //     fetchOrganizations();
   // }, []);
+  
   const { bcvRef } = useContext(bcvContext);
   const bookName = bcvRef.current.bookCode;
   const chapter = bcvRef.current.chapter;
   const verse = bcvRef.current.verse;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
+  const nameProjectFilter = nameProject;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await fetchContributions(); // Appel direct de la fonction fetchContributions
+        await fetchContributions();
       } catch (error) {
         console.error(
           "Erreur lors de la récupération des contributions:",
@@ -94,12 +96,12 @@ const ExchangeData = () => {
     };
 
     fetchData();
-  }, []); // Appelé une seule fois après le rendu initial
+  }, []);
 
   const fetchContributions = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.1.34:4000/api/contributions"
+        "http://192.168.1.35:4000/api/contributions"
       );
       setContributions(response.data);
       setLoading(false);
@@ -109,10 +111,17 @@ const ExchangeData = () => {
     }
   };
 
+  useEffect(() => {
+    const filtered = contributions.filter(
+      (conv) => conv.nameProject === nameProject
+    );
+    setFilteredContributions(filtered);
+  }, [contributions, nameProject]);
+
   const handleCloture = async (_id) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.34:4000/api/contributions/cloture",
+        "http://192.168.1.35:4000/api/contributions/cloture",
         { _id }
       );
       if (response.data.success) {
@@ -135,15 +144,24 @@ const ExchangeData = () => {
     if (activeDiscussionId) {
       interval = setInterval(() => {
         fetchMessages(activeDiscussionId);
-      }, 3000); // Met à jour les messages toutes les 3 secondes
+      }, 1000);
     }
     return () => clearInterval(interval);
   }, [activeDiscussionId]);
 
+  useEffect(()=>{
+    let internal;
+    if(newMessage){
+      internal = setInterval(()=>{
+        fetchContributions(newMessage);
+      },3000);
+    }
+  },[newMessage]);
+
   const fetchMessages = async (id) => {
     try {
       const response = await axios.get(
-        `http://192.168.1.34:4000/api/contributions/${id}/messages`
+        `http://192.168.1.35:4000/api/contributions/${id}/messages`
       );
       setMessages(response.data);
     } catch (error) {
@@ -156,63 +174,56 @@ const ExchangeData = () => {
     await fetchMessages(id);
   };
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim()) return;
-
-    try {
-      const response = await axios.post(
-        `http://192.168.1.34:4000/api/contributions/${activeDiscussionId}/messages`,
-        {
-          content: newMessage,
-        }
-      );
-      setMessages((prev) => [...prev, response.data]);
-      setNewMessage("");
-    } catch (error) {
-      console.error("Erreur lors de l'envoi du message:", error);
-    }
-  };
-
   Object.keys(groupedContributions).forEach((nameProject) => {
     groupedContributions[nameProject].sort((a, b) =>
       a.nameProject.localeCompare(b.nameProject)
     );
-  });
 
-  const formattedDate = moment(messages.createdAt).isValid()
-    ? moment(messages.createdAt).format("MMMM DD, YYYY [at] hh:mm A")
-    : "Date invalide";
+    //const nomprojet = nameProject; // On stocke le nom du projet
+    // if (nomprojet === nameProjectFilter) {
+    //   console.log(
+    //     `Affichage des contributions pour ${nomprojet}:`,
+    //     groupedContributions[nomprojet]
+    //   );
+
+    //   groupedContributions[nomprojet].forEach((contribution) => {
+    //     console.log(
+    //       `- Contribution ID: ${contribution._id}, Statut: ${contribution.statut}`
+    //     );
+    //   });
+    // }
+
+  });
 
   const handleCreateConversation = async (e) => {
     e.preventDefault();
 
     const newConversation = {
-      nameProject, // Nom du projet
+      nameProject,
       bookName,
       chapter,
       verse,
-      author: "Default Author", // Remplace par l'utilisateur connecté
-      content: newMessage, // Message initial saisi par l'utilisateur
+      author: "Default Author",
+      content: newMessage,
       createdAt: new Date(),
     };
     try {
       const response = await axios.post(
-        `http://192.168.1.34:4000/api/contributions`,
+        `http://192.168.1.35:4000/api/contributions`,
         newConversation
       );
       console.log("Nouvelle contribution créée :", response.data);
-      setNewMessage(""); // Réinitialise le message
-      setFormVisible(false); // Masque le formulaire après soumission
+      setNewMessage("");
     } catch (error) {
       console.error("Erreur lors de la création de la contribution :", error);
     }
   };
 
+  
   return (
+    <Box>
+      <Navigation />
       <Box sx={{ maxWidth: 800, margin: "auto", padding: 3 }}>
-        <Navigation />
-    
-        {/* Conteneur principal */}
         <Box
           sx={{
             border: "1px solid #ddd",
@@ -221,12 +232,10 @@ const ExchangeData = () => {
             backgroundColor: "#f9f9f9",
           }}
         >
-          {/* Titre du projet */}
           <Typography variant="h5" gutterBottom>
             {nameProject}
           </Typography>
-    
-          {/* Boutons OPEN et RESOLVED */}
+  
           <Box
             sx={{
               display: "flex",
@@ -236,7 +245,7 @@ const ExchangeData = () => {
           >
             <Typography
               component="a"
-              href="syllogos#/projects"
+              href="syllogos#/contribution"
               className="custom-button-page-project"
               onClick={() => setActiveTab("opened")}
               sx={{
@@ -249,7 +258,7 @@ const ExchangeData = () => {
             >
               <MessageIcon sx={{ marginRight: "8px" }} /> OPEN
             </Typography>
-    
+  
             <Typography
               component="a"
               className="custom-button-page-project"
@@ -265,29 +274,17 @@ const ExchangeData = () => {
               <ArchiveIcon sx={{ marginRight: "8px" }} /> RESOLVED
             </Typography>
           </Box>
-    
+  
           {activeTab === "archived" ? (
             <ArchivePage />
           ) : (
-            
             <CardContent>
               {activeDiscussionId ? (
                 <Box>
-                  <Button
-                    onClick={() => setActiveDiscussionId(null)}
-                    variant="outlined"
-                    color="primary"
-                  >
-                    Retour
-                  </Button>
-                  <Typography variant="h5" align="center" gutterBottom>
-                    Discussion
-                  </Typography>
                   <Box
                     sx={{
                       maxHeight: 300,
                       overflowY: "auto",
-                      border: "1px solid #ccc",
                       padding: 2,
                     }}
                   >
@@ -298,6 +295,7 @@ const ExchangeData = () => {
                               "MMMM DD, YYYY [at] hh:mm A"
                             )
                           : "Date invalide";
+  
                         return (
                           <Box key={index} sx={{ marginBottom: 1 }}>
                             <strong>Loise - {formattedDate}</strong>
@@ -312,47 +310,52 @@ const ExchangeData = () => {
                       </Typography>
                     )}
                   </Box>
+                  <Button
+                    onClick={() => setActiveDiscussionId(null)}
+                    variant="outlined"
+                    color="primary"
+                    sx={{ marginTop: 2 }}
+                  >
+                    Retour
+                  </Button>
                 </Box>
               ) : (
-                Object.keys(groupedContributions).map((projectTitle) => (
-                  <Box key={projectTitle} sx={{ marginBottom: 2 }}>
-                    <Typography variant="h6">{projectTitle}</Typography>
-                    {groupedContributions[projectTitle].map((contribution) => (
-                      <Box
-                        key={contribution._id}
-                        sx={{ display: "flex", gap: 1, marginBottom: 1 }}
-                        onChange={() => handleViewDiscussion(contribution._id)}
-                      >
-                        <Button
-                          onClick={() => handleViewDiscussion(contribution._id)}
-                          size="small"
-                          color="primary"
+                Object.keys(groupedContributions)
+                  .filter((nameProject) => nameProject === nameProjectFilter)
+                  .map((nameProject) => (
+                    <Box key={nameProject} sx={{ marginBottom: 2 }}>
+                      <Typography variant="h6">{nameProject}</Typography>
+                      {groupedContributions[nameProject].map((contribution) => (
+                        <Box
+                          key={contribution._id}
+                          sx={{ display: "flex", gap: 1, marginBottom: 1 }}
                         >
-                          Afficher
-                        </Button>
-                        {contribution.statut !== "cloture" && (
                           <Button
-                            onClick={() => handleCloture(contribution._id)}
+                            onClick={() => handleViewDiscussion(contribution._id)}
                             size="small"
-                            color="secondary"
+                            color="primary"
                           >
-                            Clôturer
+                            Afficher
                           </Button>
-                        )}
-                      </Box>
-                    ))}
-                  </Box>
-                ))
+                          {contribution.statut !== "cloture" && (
+                            <Button
+                              onClick={() => handleCloture(contribution._id)}
+                              size="small"
+                              color="secondary"
+                            >
+                              Clôturer
+                            </Button>
+                          )}
+                        </Box>
+                      ))}
+                    </Box>
+                    
+                  ))
               )}
             </CardContent>
           )}
-    
-          {/* Formulaire toujours visible (placé en bas) */}
-          <Box
-            component="form"
-            onSubmit={handleCreateConversation}
-            sx={{ marginTop: 2 }}
-          >
+  
+          <Box component="form" onSubmit={handleCreateConversation} sx={{ marginTop: 2 }}>
             <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
               <TextField
                 name="newMessage"
@@ -375,8 +378,9 @@ const ExchangeData = () => {
           </Box>
         </Box>
       </Box>
-    );
-    
+    </Box>
+  );
+  
 };
 
 export default ExchangeData;

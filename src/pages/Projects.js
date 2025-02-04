@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { bcvContext} from "pithekos-lib";
+import { bcvContext } from "pithekos-lib";
 import {
   Button,
   Typography,
@@ -126,7 +126,7 @@ const ProjectPage = () => {
         return acc;
       }, {})
     : {};
-      console.log(groupedContributions);
+  console.log(groupedContributions);
 
   Object.keys(groupedContributions).forEach((title) => {
     groupedContributions[title].sort((a, b) =>

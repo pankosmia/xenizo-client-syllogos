@@ -41,7 +41,6 @@ const ArchivePage = () => {
         setLoading(false);
       }
     };
-
     fetchArchivedContributions();
   }, [navigate]);
 
@@ -66,69 +65,70 @@ const ArchivePage = () => {
     <Box sx={{ padding: 4 }}>
       {error && <Typography color="error">{error}</Typography>}
       {Object.keys(groupedArchives).length > 0 ? (
-        Object.keys(groupedArchives).map((projectTitle) => (
-          <Box key={projectTitle} sx={{ marginBottom: 3 }}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                cursor: "pointer",
-                bgcolor: "grey.100",
-                p: 1,
-                borderRadius: 1,
-              }}
-              onClick={() => toggleArchiveExpansion(projectTitle)}
-            >
-              <Typography variant="h6">Projet : {projectTitle}</Typography>
-              <Button size="small">
-                {expandedArchive === projectTitle ? "▲" : "▼"}
-              </Button>
+        Object.keys(groupedArchives).map((projectTitle) => {
+          return (
+            <Box key={projectTitle} sx={{ marginBottom: 3 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  cursor: "pointer",
+                  p: 1,
+                  borderRadius: 1,
+                }}
+                onClick={() => toggleArchiveExpansion(projectTitle)}
+              >
+                <Typography variant="h6">{projectTitle}</Typography>
+                <Button size="small">
+                  {expandedArchive === projectTitle ? "▲" : "▼"}
+                </Button>
+              </Box>
+  
+              <Collapse in={expandedArchive === projectTitle}>
+                {Object.keys(groupedArchives[projectTitle]).map((subProject) =>
+                  groupedArchives[projectTitle][subProject].map((archive) => {
+                    console.log("archive", archive); // Log de chaque archive
+                    return (
+                      <Box key={archive._id} sx={{ marginBottom: 2, paddingLeft: 2 }}>
+                        <Typography variant="subtitle2" gutterBottom>
+                          {projectTitle} - {archive.description || "Pas de description disponible"}
+                        </Typography>
+                        {archive.messages && archive.messages.length > 0 ? (
+                          archive.messages.map((message, index) => {
+                            const formattedDate = moment(
+                              message.createdAt
+                            ).isValid()
+                              ? moment(message.createdAt).format(
+                                  "MMMM DD, YYYY [at] hh:mm A"
+                                )
+                              : "Date invalide";
+                            return (
+                              <Box key={index} sx={{ marginBottom: 1 }}>
+                                <Typography variant="body2">
+                                  <strong>
+                                    {message.author} - {formattedDate}
+                                  </strong>
+                                </Typography>
+                                <Typography variant="body2">
+                                  {message.content}
+                                </Typography>
+                              </Box>
+                            );
+                          })
+                        ) : (
+                          <Typography variant="body2" color="textSecondary">
+                            Aucun message pour ce chapitre.
+                          </Typography>
+                        )}
+                      </Box>
+                    );
+                  })
+                )}
+              </Collapse>
             </Box>
-
-            <Collapse in={expandedArchive === projectTitle}>
-              {Object.keys(groupedArchives[projectTitle]).map((subProject) =>
-                groupedArchives[projectTitle][subProject].map((archive) => (
-                  <Box
-                    key={archive._id}
-                    sx={{ marginBottom: 2, paddingLeft: 2 }}
-                  >
-                    <Typography variant="subtitle2" gutterBottom>
-                     {projectTitle}
-                    </Typography>
-                    {archive.messages && archive.messages.length > 0 ? (
-                      archive.messages.map((message, index) => {
-                        const formattedDate = moment(
-                          message.createdAt
-                        ).isValid()
-                          ? moment(message.createdAt).format(
-                              "MMMM DD, YYYY [at] hh:mm A"
-                            )
-                          : "Date invalide";
-                        return (
-                          <Box key={index} sx={{ marginBottom: 1 }}>
-                            <Typography variant="body2">
-                              <strong>
-                                {message.author} - {formattedDate}
-                              </strong>
-                            </Typography>
-                            <Typography variant="body2">
-                              {message.content}
-                            </Typography>
-                          </Box>
-                        );
-                      })
-                    ) : (
-                      <Typography variant="body2" color="textSecondary">
-                        Aucun message pour ce chapitre.
-                      </Typography>
-                    )}
-                  </Box>
-                ))
-              )}
-            </Collapse>
-          </Box>
-        ))
+          );
+        })
       ) : (
         <Typography variant="body1" align="center" color="textSecondary">
           Aucune archive trouvée.
@@ -136,6 +136,6 @@ const ArchivePage = () => {
       )}
     </Box>
   );
-};
+};  
 
 export default ArchivePage;

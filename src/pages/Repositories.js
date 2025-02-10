@@ -8,7 +8,7 @@ import {
   Box,
   Typography,
   CardContent,
-  responsiveFontSizes,
+  Badge,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
@@ -23,7 +23,6 @@ const ExchangeData = () => {
   const [filteredContributions, setFilteredContributions] = useState([]);
   const [messages, setMessages] = useState("");
   const [error, setError] = useState(null);
-  const [projectNameError, setProjectNameError] = useState("");
   const [loading, setLoading] = useState(true);
   //const [author, setAuthor] = useState("");
   const [activeTab, setActiveTab] = useState("opened");
@@ -33,6 +32,7 @@ const ExchangeData = () => {
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
   const [showDescription, setShowDescription] = useState(true);
+  const [unreadMessage, setUnreadMessage] = useState({});
   moment.locale("en");
 
   const groupedContributions = contributions?.length
@@ -165,11 +165,10 @@ const ExchangeData = () => {
     let internal;
     if (newMessage && description) {
       internal = setInterval(() => {
-        fetchContributions(newMessage && description
-        );
+        fetchContributions(newMessage && description);
       }, 3000);
     }
-  }, [newMessage,description]);
+  }, [newMessage, description]);
 
   const fetchMessages = async (id) => {
     try {
@@ -177,23 +176,32 @@ const ExchangeData = () => {
         `http://192.168.1.34:4000/api/contributions/${id}/messages`
       );
       setMessages(response.data);
+      const unread = response.data.filter((msg) => !msg.isRead).length;
+      setUnreadMessage((prev) => ({
+        ...prev,
+        [id]: unread,
+      }));
     } catch (error) {
       console.error("Erreur lors de la récupération des messages:", error);
     }
   };
 
   const handleViewDiscussion = async (id, contributions) => {
-    // Cherche la contribution avec l'ID correspondant dans le tableau des contributions
     const selectedContribution = contributions.find(
       (contribution) => contribution._id === id
     );
 
-    // Si la contribution est trouvée, mets à jour la description
     if (selectedContribution) {
-      setActiveDiscussionId(id); // Active la discussion
-      setDescription(selectedContribution.description); // Met à jour la description
+      setActiveDiscussionId(id);
+      setDescription(selectedContribution.description);
       setShowDescription(false);
-      await fetchMessages(id); // Récupère les messages associés à cette conversation
+
+      setUnreadMessage((prev) => ({
+        ...prev,
+        [id]: 0,
+      }));
+
+      await fetchMessages(id);
     }
   };
 
@@ -229,7 +237,6 @@ const ExchangeData = () => {
     }
   };
 
-
   return (
     <Box>
       <Navigation />
@@ -239,7 +246,6 @@ const ExchangeData = () => {
             border: "1px solid #ddd",
             padding: 2,
             borderRadius: 2,
-            backgroundColor: "#f9f9f9",
           }}
         >
           <Typography variant="h5" gutterBottom>
@@ -327,7 +333,7 @@ const ExchangeData = () => {
                   <Button
                     onClick={() => {
                       setActiveDiscussionId(null);
-                      setShowDescription(true); // Remise à true de showDescription
+                      setShowDescription(true);
                     }}
                     variant="outlined"
                     color="secondary"
@@ -350,24 +356,30 @@ const ExchangeData = () => {
                             gap: 1,
                           }}
                         >
-                          <Typography variant="body2">
-                            {contribution.nameProject} - {contribution.description}
+                          <Typography variant="body6 ">
+                            {contribution.nameProject} -{" "}
+                            {contribution.description}
                           </Typography>
 
                           <Box sx={{ display: "flex", gap: 1 }}>
-                            <Button
-                              onClick={() =>
-                                handleViewDiscussion(
-                                  contribution._id,
-                                  groupedContributions[nameProjectFilter]
-                                )
-                              } // Appel de la fonction handleAfficher
-                              size="small"
-                              color="primary"
+                            <Badge
+                              color="error"
+                              variant="dot"
+                              invisible={!unreadMessage[contribution._id]}
                             >
-                              Afficher
-                            </Button>
-
+                              <Button
+                                onClick={() =>
+                                  handleViewDiscussion(
+                                    contribution._id,
+                                    groupedContributions[nameProjectFilter]
+                                  )
+                                }
+                                size="small"
+                                color="primary"
+                              >
+                                Afficher
+                              </Button>
+                            </Badge>
                             {contribution.statut !== "cloture" && (
                               <Button
                                 onClick={() => handleCloture(contribution._id)}

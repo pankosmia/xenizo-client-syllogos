@@ -2,15 +2,21 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { bcvContext, postEmptyJson } from "pithekos-lib";
-import { TextField, Button, Box, Typography, CardContent, responsiveFontSizes } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  CardContent,
+  responsiveFontSizes,
+} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import ArchivePage from "./Archive";
-import { ContributionsProvider } from "../ContributionContext";
-import ProjectPage from "./Projects";
 import Navigation from "../components/Navigation";
 import moment from "moment";
+import { use } from "react";
 
 const ExchangeData = () => {
   const [filteredRepositories, setFilteredRepositories] = useState([]);
@@ -26,6 +32,7 @@ const ExchangeData = () => {
   const [contributions, setContributions] = useState([]);
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
+  const [showDescription, setShowDescription] = useState(true);
   moment.locale("en");
 
   const groupedContributions = contributions?.length
@@ -103,7 +110,7 @@ const ExchangeData = () => {
   const fetchContributions = async () => {
     try {
       const response = await axios.get(
-        "http://192.168.1.35:4000/api/contributions"
+        "http://192.168.1.34:4000/api/contributions"
       );
       setContributions(response.data);
       setLoading(false);
@@ -123,7 +130,7 @@ const ExchangeData = () => {
   const handleCloture = async (_id) => {
     try {
       const response = await axios.post(
-        "http://192.168.1.35:4000/api/contributions/cloture",
+        "http://192.168.1.34:4000/api/contributions/cloture",
         { _id }
       );
       if (response.data.success) {
@@ -156,17 +163,18 @@ const ExchangeData = () => {
 
   useEffect(() => {
     let internal;
-    if (newMessage) {
+    if (newMessage && description) {
       internal = setInterval(() => {
-        fetchContributions(newMessage);
+        fetchContributions(newMessage && description
+        );
       }, 3000);
     }
-  }, [newMessage]);
+  }, [newMessage,description]);
 
   const fetchMessages = async (id) => {
     try {
       const response = await axios.get(
-        `http://192.168.1.35:4000/api/contributions/${id}/messages`
+        `http://192.168.1.34:4000/api/contributions/${id}/messages`
       );
       setMessages(response.data);
     } catch (error) {
@@ -174,9 +182,19 @@ const ExchangeData = () => {
     }
   };
 
-  const handleViewDiscussion = async (id) => {
-    setActiveDiscussionId(id);
-    await fetchMessages(id);
+  const handleViewDiscussion = async (id, contributions) => {
+    // Cherche la contribution avec l'ID correspondant dans le tableau des contributions
+    const selectedContribution = contributions.find(
+      (contribution) => contribution._id === id
+    );
+
+    // Si la contribution est trouvée, mets à jour la description
+    if (selectedContribution) {
+      setActiveDiscussionId(id); // Active la discussion
+      setDescription(selectedContribution.description); // Met à jour la description
+      setShowDescription(false);
+      await fetchMessages(id); // Récupère les messages associés à cette conversation
+    }
   };
 
   Object.keys(groupedContributions).forEach((nameProject) => {
@@ -193,14 +211,14 @@ const ExchangeData = () => {
       bookName,
       chapter,
       verse,
-      description : description,
+      description: description,
       author: author,
       content: newMessage,
       createdAt: new Date(),
     };
     try {
       const response = await axios.post(
-        `http://192.168.1.35:4000/api/contributions`,
+        `http://192.168.1.34:4000/api/contributions`,
         newConversation
       );
       console.log("Nouvelle contribution créée :", response.data);
@@ -210,6 +228,7 @@ const ExchangeData = () => {
       console.error("Erreur lors de la création de la contribution :", error);
     }
   };
+
 
   return (
     <Box>
@@ -274,13 +293,7 @@ const ExchangeData = () => {
             <CardContent>
               {activeDiscussionId ? (
                 <Box>
-                  <Box
-                    sx={{
-                      maxHeight: 300,
-                      overflowY: "auto",
-                      padding: 2,
-                    }}
-                  >
+                  <Box sx={{ maxHeight: 300, overflowY: "auto", padding: 2 }}>
                     {messages.length > 0 ? (
                       messages.map((message, index) => {
                         const formattedDate = moment(
@@ -294,13 +307,13 @@ const ExchangeData = () => {
                         return (
                           <Box key={index} sx={{ marginBottom: 1 }}>
                             <strong>
-                              {" "}
-                              {author} • {formattedDate}
+                              {message.author} • {formattedDate}
                             </strong>
                             <br />
-                            <Typography sx={{ paddingTop: 2, paddingBottom:2 }}>
+                            <Typography
+                              sx={{ paddingTop: 2, paddingBottom: 2 }}
+                            >
                               {message.content}
-                              {description}
                             </Typography>
                           </Box>
                         );
@@ -312,7 +325,10 @@ const ExchangeData = () => {
                     )}
                   </Box>
                   <Button
-                    onClick={() => setActiveDiscussionId(null)}
+                    onClick={() => {
+                      setActiveDiscussionId(null);
+                      setShowDescription(true); // Remise à true de showDescription
+                    }}
                     variant="outlined"
                     color="secondary"
                     sx={{ marginTop: 2, border: "none", textAlign: "right" }}
@@ -325,31 +341,43 @@ const ExchangeData = () => {
                   .filter((nameProject) => nameProject === nameProjectFilter)
                   .map((nameProject) => (
                     <Box key={nameProject} sx={{ marginBottom: 2 }}>
-                      <Typography variant="h6">{nameProject} - {} </Typography>
                       {groupedContributions[nameProject].map((contribution) => (
                         <Box
                           key={contribution._id}
-                          sx={{ display: "flex", gap: 1, marginBottom: 1 }}
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 1,
+                          }}
                         >
-                          <Button
-                            onClick={() =>
-                              handleViewDiscussion(contribution._id)
-                            }
-                            size="small"
-                            color="primary"
-                          >
-                            Afficher
-                          </Button>
+                          <Typography variant="body2">
+                            {contribution.nameProject} - {contribution.description}
+                          </Typography>
 
-                          {contribution.statut !== "cloture" && (
+                          <Box sx={{ display: "flex", gap: 1 }}>
                             <Button
-                              onClick={() => handleCloture(contribution._id)}
+                              onClick={() =>
+                                handleViewDiscussion(
+                                  contribution._id,
+                                  groupedContributions[nameProjectFilter]
+                                )
+                              } // Appel de la fonction handleAfficher
                               size="small"
-                              color="secondary"
+                              color="primary"
                             >
-                              Clôturer
+                              Afficher
                             </Button>
-                          )}
+
+                            {contribution.statut !== "cloture" && (
+                              <Button
+                                onClick={() => handleCloture(contribution._id)}
+                                size="small"
+                                color="secondary"
+                              >
+                                Clôturer
+                              </Button>
+                            )}
+                          </Box>
                         </Box>
                       ))}
                     </Box>
@@ -361,23 +389,38 @@ const ExchangeData = () => {
           <Box
             component="form"
             onSubmit={handleCreateConversation}
-            sx={{ marginTop: 2 }}
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              gap: 2,
+              alignItems: "center",
+            }}
           >
-            <Box sx={{ display: "flex", alignItems: "end", gap: 1 }}>
-              <TextField
-                name="description"
-                placeholder={`quikly description`}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                multiline
-                rows={4}
-                fullWidth
-                className="text-block-message"
-                sx={{
-                  "& .MuiOutlinedInput-root": { border: "none" },
-                  "& .MuiOutlinedInput-notchedOutline": { border: "none" },
-                }}
-              />
+            {showDescription && (
+              <Box
+                sx={{ display: "flex", gap: 2, alignItems: "center", flex: 1 }}
+              >
+                <TextField
+                  name="description"
+                  placeholder="Quick description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  multiline
+                  rows={4}
+                  fullWidth
+                  className="text-block-message"
+                  required
+                  sx={{
+                    "& .MuiOutlinedInput-root": { border: "none" },
+                    "& .MuiOutlinedInput-notchedOutline": { border: "none" },
+                  }}
+                />
+              </Box>
+            )}
+
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}
+            >
               <TextField
                 name="newMessage"
                 placeholder={`Send a message about ${nameProject}`}
@@ -386,6 +429,7 @@ const ExchangeData = () => {
                 multiline
                 rows={4}
                 fullWidth
+                required
                 className="text-block-message"
                 sx={{
                   "& .MuiOutlinedInput-root": { border: "none" },
@@ -396,6 +440,12 @@ const ExchangeData = () => {
                 type="submit"
                 variant="text"
                 className="button-submit-message"
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  padding: "8px",
+                }}
               >
                 <SendIcon className="iconbutton" />
               </Button>
@@ -406,5 +456,4 @@ const ExchangeData = () => {
     </Box>
   );
 };
-
 export default ExchangeData;

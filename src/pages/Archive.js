@@ -9,7 +9,6 @@ const ArchivePage = () => {
   const [archivedContributions, setArchivedContributions] = useState([]);
   const [groupedArchives, setGroupedArchives] = useState({});
   const [expandedArchive, setExpandedArchive] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   moment.locale("en");
@@ -27,9 +26,9 @@ const ArchivePage = () => {
     const fetchArchivedContributions = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.1.35:4000/api/contributions/archived"
+          "http://192.168.1.34:4000/api/contributions/archived"
         );
-        const grouped = groupArchivesByTitleAndProject(response.data); // Regrouper par selectedTitle et nameProject
+        const grouped = groupArchivesByTitleAndProject(response.data); 
         setGroupedArchives(grouped);
         setArchivedContributions(response.data);
       } catch (err) {
@@ -44,7 +43,7 @@ const ArchivePage = () => {
     };
 
     fetchArchivedContributions();
-  }, [navigate]); // Le hook navigate est passé en dépendance
+  }, [navigate]);
 
   const groupArchivesByTitleAndProject = (archives) => {
     return archives.reduce((acc, archive) => {
@@ -69,7 +68,6 @@ const ArchivePage = () => {
       {Object.keys(groupedArchives).length > 0 ? (
         Object.keys(groupedArchives).map((projectTitle) => (
           <Box key={projectTitle} sx={{ marginBottom: 3 }}>
-            {/* En-tête cliquable pour toggler l'affichage du projet */}
             <Box
               sx={{
                 display: "flex",
@@ -88,7 +86,6 @@ const ArchivePage = () => {
               </Button>
             </Box>
 
-            {/* Contenu collapsible contenant les discussions pour le projet */}
             <Collapse in={expandedArchive === projectTitle}>
               {Object.keys(groupedArchives[projectTitle]).map((subProject) =>
                 groupedArchives[projectTitle][subProject].map((archive) => (
@@ -97,7 +94,7 @@ const ArchivePage = () => {
                     sx={{ marginBottom: 2, paddingLeft: 2 }}
                   >
                     <Typography variant="subtitle2" gutterBottom>
-                      Messages :
+                     {projectTitle}
                     </Typography>
                     {archive.messages && archive.messages.length > 0 ? (
                       archive.messages.map((message, index) => {

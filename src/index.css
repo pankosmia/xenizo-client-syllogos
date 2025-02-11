@@ -38,17 +38,22 @@ code {
 
 }
 
-/* Repostiories */
+/* Repostories */
 .custom-createproject{
   background-color: #5b0772 !important;
 }
 .button-submit-message{
   background-color: transparent;
+  display: "flex";
+  align-items: "center";
+  justify-content: "center";
+  padding: 8px;
 }
 
 .text-block-message{
   background-color: rgb(218, 214, 214);
   border-radius: 5px;
+  border: none !important;
 }
 .text-block-message:focus{
   background-color: rgb(218, 214, 214);
@@ -56,6 +61,9 @@ code {
 }
 .iconbutton{
   color: rgb(54, 53, 53);
+}
+.MuiOutlinedInput-notchedOutline {
+  border: none !important;
 }
 
 .custom-button-page-project{
@@ -85,4 +93,56 @@ code {
   border-bottom-color: blue;
   outline: none;
 
+}
+.sizeletters{
+ font-size: 10px;
+}
+
+.button-afficher {
+  font-size: small;
+  color: blue;
+}
+
+.button-close{
+  font-size: small;
+  color: red;
+}
+
+.button-return{
+  font-size: small;
+  color: red;
+  justify-content: right;
+}
+
+.text-box{
+  display: flex;
+  align-items: "center";
+  gap: 8px;
+  flex: 1
+}
+
+.text-box-flex-direction{
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: gray; 
+  border-bottom: none;
+}
+
+.tab.active {
+  color:blue; 
+  border-bottom: 3px solid;
+}
+
+.text-box-project{
+  display: flex;
+  flex-direction: column;
+  gap: 4px,
 }

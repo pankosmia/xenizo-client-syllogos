@@ -13,6 +13,8 @@ const ArchivePage = () => {
   const [error, setError] = useState(null);
   moment.locale("en");
   const navigate = useNavigate();
+  const config = require("../config.json")
+
 
   useEffect(() => {
     // const sessionToken = Cookies.get('session'); // Vérification du cookie de session
@@ -23,10 +25,12 @@ const ArchivePage = () => {
     //     return;
     // }
 
+    const url = config.REDIRECT_URI; 
+
     const fetchArchivedContributions = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.1.34:4000/api/contributions/archived"
+          `${url}/api/contributions/archived`
         );
         const grouped = groupArchivesByTitleAndProject(response.data); 
         setGroupedArchives(grouped);

@@ -5,7 +5,7 @@ import './index.css';
 import {createHashRouter, RouterProvider} from "react-router-dom";
 
 import Home from './pages/Home';
-import ArchivePage from './pages/Archive';
+import ArchivePage from './pages/Archives';
 import ProfileUser from './pages/ProfileUser';
 import ExchangeData from './pages/Repositories';
 

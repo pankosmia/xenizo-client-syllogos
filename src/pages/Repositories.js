@@ -12,7 +12,7 @@ import {
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
-import ArchivePage from "./Archive";
+import ArchivePage from "./Archives";
 import Navigation from "../components/Navigation";
 import moment from "moment";
 

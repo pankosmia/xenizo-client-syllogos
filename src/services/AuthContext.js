@@ -1,37 +1,33 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import Cookies from 'js-cookie';
+// import React, { createContext, useState, useEffect } from 'react';
+// import { useContext } from "react";
 
-// Création du contexte
-const AuthContext = createContext();
+// import Cookies from 'js-cookie';
 
-// Hook pour accéder facilement au contexte d'authentification
-export const useAuth = () => useContext(AuthContext);
+// const AuthContext = createContext();
 
-// Fournisseur de contexte pour l'application
-export const AuthProvider = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+// export const useAuth = () => useContext(AuthContext);
 
-    useEffect(() => {
-        // Vérifie la présence du cookie de session au démarrage
-        const sessionCookie = Cookies.get('session');
-        setIsAuthenticated(sessionCookie);
+// export const AuthProvider = ({ children }) => {
+//     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-        // Définir un intervalle pour surveiller la session
-        const interval = setInterval(() => {
-            const sessionToken = Cookies.get('session');
-            if (!sessionToken) {
-                console.log('Session expirée.');
-                setIsAuthenticated(false);
-            }
-        }, 5000);
+//     useEffect(() => {
+//         const sessionCookie = Cookies.get('session');
+//         setIsAuthenticated(sessionCookie);
 
-        // Nettoyage à la fin
-        return () => clearInterval(interval);
-    }, []);
+//         const interval = setInterval(() => {
+//             const sessionToken = Cookies.get('session');
+//             if (!sessionToken) {
+//                 console.log('Session expirée.');
+//                 setIsAuthenticated(false);
+//             }
+//         }, 5000);
 
-    return (
-        <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-            {children}
-        </AuthContext.Provider>
-    );
-};
+//         return () => clearInterval(interval);
+//     }, []);
+
+//     return (
+//         <AuthContext value={{ isAuthenticated, setIsAuthenticated }}>
+//             {children}
+//         </AuthContext>
+//     );
+// };

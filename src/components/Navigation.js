@@ -26,26 +26,6 @@ function Navigation() {
           <Button
             color="inherit"
             component={Link}
-            to="/projects"
-            sx={{
-              color: location.pathname === "/projects" ? "black" : "white",
-            }}
-          >
-            Projets
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/archives"
-            sx={{
-              color: location.pathname === "/archives" ? "black" : "white",
-            }}
-          >
-            Archives
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
             to="/profile"
             sx={{
               color: location.pathname === "/profile" ? "black" : "white",

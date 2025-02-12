@@ -1,4 +1,6 @@
 import axios from 'axios';
+const config = require("../config.json")
+const url = config.REDIRECT_URI
 
 export const fetchUserProfile = async (token) => {
     try {
@@ -13,7 +15,7 @@ export const fetchUserProfile = async (token) => {
 
 export const fetchOrganizationsWithTeamsAndRepos = async (token, username) => {
     try {
-        const { data: organizationsWithDetails } = await axios.post('/get-organizations', {
+        const { data: organizationsWithDetails } = await axios.post(`${url}/get-organizations`, {
             accessToken: token,
             username,
         });
@@ -31,8 +33,8 @@ export const fetchOrganizationsWithTeamsAndRepos = async (token, username) => {
         };
 
         const [teamsData] = await Promise.all([
-            fetchDataForOrg('/api/get-teams'),
-            fetchDataForOrg('/api/get-organizationrepos'),
+            fetchDataForOrg(`${url}/api/get-teams`),
+            fetchDataForOrg(`${url}/api/get-organizationrepos`),
         ]);
 
         return { organizationsWithDetails, teamsData };
@@ -43,7 +45,7 @@ export const fetchOrganizationsWithTeamsAndRepos = async (token, username) => {
 
 export const exchangeCodeForAccessToken = async (code) => {
     try {
-        const { data } = await axios.post(`/client`, { code });
+        const { data } = await axios.post(`${url}/client`, { code });
         return data.access_token;
     } catch (error) {
         throw new Error("Erreur lors de l'échange du code pour le token.");
@@ -52,7 +54,7 @@ export const exchangeCodeForAccessToken = async (code) => {
 
 export const logout = async () => {
     try {
-        await axios.get('/logout');
+        await axios.get(`${url}/logout`);
     } catch (error) {
         throw new Error('Erreur lors de la déconnexion.');
     }

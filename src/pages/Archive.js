@@ -13,8 +13,7 @@ const ArchivePage = () => {
   const [error, setError] = useState(null);
   moment.locale("en");
   const navigate = useNavigate();
-  const config = require("../config.json")
-
+  const config = require("../config.json");
 
   useEffect(() => {
     // const sessionToken = Cookies.get('session'); // Vérification du cookie de session
@@ -25,14 +24,12 @@ const ArchivePage = () => {
     //     return;
     // }
 
-    const url = config.REDIRECT_URI; 
+    const url = config.REDIRECT_URI;
 
     const fetchArchivedContributions = async () => {
       try {
-        const response = await axios.get(
-          `${url}/api/contributions/archived`
-        );
-        const grouped = groupArchivesByTitleAndProject(response.data); 
+        const response = await axios.get(`${url}/api/contributions/archived`);
+        const grouped = groupArchivesByTitleAndProject(response.data);
         setGroupedArchives(grouped);
         setArchivedContributions(response.data);
       } catch (err) {
@@ -66,37 +63,42 @@ const ArchivePage = () => {
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
+    <Box sx={{ maxWidth: 800, margin: "auto",padding:"16px"}}>
       {error && <Typography color="error">{error}</Typography>}
       {Object.keys(groupedArchives).length > 0 ? (
         Object.keys(groupedArchives).map((projectTitle) => {
           return (
-            <Box key={projectTitle} sx={{ marginBottom: 3 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  p: 1,
-                  borderRadius: 1,
-                }}
+            <Box key={projectTitle}>
+              <Box 
+                className="text-box-project-archive"
                 onClick={() => toggleArchiveExpansion(projectTitle)}
               >
-                <Typography variant="h6">{projectTitle}</Typography>
+                <Typography variant="subtitle1">{projectTitle}</Typography>
                 <Button size="small">
                   {expandedArchive === projectTitle ? "▲" : "▼"}
                 </Button>
               </Box>
-  
+
               <Collapse in={expandedArchive === projectTitle}>
                 {Object.keys(groupedArchives[projectTitle]).map((subProject) =>
                   groupedArchives[projectTitle][subProject].map((archive) => {
-                    console.log("archive", archive); // Log de chaque archive
                     return (
-                      <Box key={archive._id} sx={{ marginBottom: 2, paddingLeft: 2 }}>
+                      <Box
+                        key={archive._id}
+                        sx={{
+                          marginBottom: 2,
+                          paddingLeft: 2,
+                          backgroundColor: "#f5f5f5",
+                          padding: "16px",
+                          bordeRadius: "8px",
+                          marginBottom: "16px",
+                          boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                        }}
+                      >
                         <Typography variant="subtitle2" gutterBottom>
-                          {projectTitle} - {archive.description || "Pas de description disponible"}
+                          {projectTitle} -{" "}
+                          {archive.description ||
+                            "Pas de description disponible"}
                         </Typography>
                         {archive.messages && archive.messages.length > 0 ? (
                           archive.messages.map((message, index) => {
@@ -140,6 +142,6 @@ const ArchivePage = () => {
       )}
     </Box>
   );
-};  
+};
 
 export default ArchivePage;

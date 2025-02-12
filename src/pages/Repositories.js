@@ -8,7 +8,6 @@ import {
   Box,
   Typography,
   CardContent,
-  Badge,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
@@ -16,7 +15,6 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import ArchivePage from "./Archive";
 import Navigation from "../components/Navigation";
 import moment from "moment";
-import config from "../config.json"
 
 
 const ExchangeData = () => {
@@ -238,7 +236,7 @@ const ExchangeData = () => {
             borderRadius: 2,
           }}
         >
-          <Typography className="sizeletters" gutterBottom>
+          <Typography className="sizeletters">
             {nameProject}
           </Typography>
 
@@ -319,13 +317,14 @@ const ExchangeData = () => {
                 Object.keys(groupedContributions)
                   .filter((nameProject) => nameProject === nameProjectFilter)
                   .map((nameProject) => (
-                    <Box key={nameProject} sx={{ marginBottom: 2 }}>
+                    <Box key={nameProject} sx={{ marginBottom: 2, minHeight:100 }}>
                       {groupedContributions[nameProject].map((contribution) => (
                         <Box
                           key={contribution._id}
                          className="text-box-project"
+                        
                         >
-                          <Typography variant="body6 ">
+                          <Typography variant="subtitle1">
                             {contribution.nameProject} - {contribution.description}
                           </Typography>
 

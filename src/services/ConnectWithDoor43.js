@@ -3,15 +3,9 @@ import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useLocation } from "react-router-dom";
 import Profile from "../components/Profile";
-import {
-  exchangeCodeForAccessToken,
-  fetchUserProfile,
-  fetchOrganizationsWithTeamsAndRepos,
-  logout,
-} from "../services/auth";
-//import { useAuth } from "../services/AuthContext";
 import {Button} from "@mui/material";
 import logo from "../assets/img/logo.svg";
+import axios from "axios";
 
 function Door43LoginButton() {
   const config = require("../config.json");
@@ -27,7 +21,7 @@ function Door43LoginButton() {
   const code = urlParams.get("code");
   const returnedState = urlParams.get("state");
   const storedState = Cookies.get("oauth_state");
-  const url = config.REDIRECT_URI;
+  const url = config.auth_server;
 
   const loginWithDoor43 = () => {
     window.location.href = `${url}/auth`;
@@ -36,7 +30,8 @@ function Door43LoginButton() {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await axios.get(
+        `${url}/logout/`)
       //setIsAuthenticated(false);
       window.location.href = `${url}`;
     } catch (error) {
@@ -49,14 +44,14 @@ function Door43LoginButton() {
       const fetchData = async () => {
         try {
           setLoading(true);
-          const token = await exchangeCodeForAccessToken(code);
-          const userProfile = await fetchUserProfile(token);
+          const token = await axios.get(`${url}/auth`)(code);
+          const userProfile = await axios.get(`${url}/api/user`)(token);
           const { login, avatar_url } = userProfile;
           setUser(login);
           setAvatarUrl(avatar_url);
 
           const { organizationsWithDetails, teamsData } =
-            await fetchOrganizationsWithTeamsAndRepos(token, login);
+            await axios.get(`${url}/api/organizations`)(token, login);
           setOrganizations(organizationsWithDetails);
           setTeams(teamsData);
         } catch (error) {

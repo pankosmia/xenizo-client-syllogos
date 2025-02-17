@@ -9,6 +9,9 @@ const ArchivePage = () => {
   const [archivedContributions, setArchivedContributions] = useState([]);
   const [groupedArchives, setGroupedArchives] = useState({});
   const [expandedArchive, setExpandedArchive] = useState(null);
+  const [expandedDescription,setExpandedDescription] = useState(null);
+  const [expandedDiscussion, setExpandedDiscussion] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   moment.locale("en");
@@ -24,7 +27,7 @@ const ArchivePage = () => {
     //     return;
     // }
 
-    const url = config.REDIRECT_URI;
+    const url = config.auth_server;
 
     const fetchArchivedContributions = async () => {
       try {
@@ -60,6 +63,15 @@ const ArchivePage = () => {
 
   const toggleArchiveExpansion = (title) => {
     setExpandedArchive((prevTitle) => (prevTitle === title ? null : title));
+    console.log(title);
+  };
+
+  const toggleDescriptionExpansive = (description,contributionId)=>{
+    setExpandedDescription((prevDescription)=>(prevDescription === description ? null : description));
+    setExpandedDiscussion((prevId) => (prevId === contributionId ? null : contributionId));
+
+  console.log("Description:", description);
+  console.log("Discussion ID:", contributionId);
   };
 
   return (
@@ -100,6 +112,7 @@ const ArchivePage = () => {
                           {archive.description ||
                             "Pas de description disponible"}
                         </Typography>
+                        {/* <Button>{expandedDescription === description ? "o" : "c"} </Button> */}
                         {archive.messages && archive.messages.length > 0 ? (
                           archive.messages.map((message, index) => {
                             const formattedDate = moment(

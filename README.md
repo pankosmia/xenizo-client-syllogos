@@ -5,3 +5,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 It assumes that it is being served by the Pithekos server, so you need to `npm run build`. (Please do not add CORS to the server, *again*).
 
 See [the main README file](../README.md) for more information
+
+
+create config.json
+----create config.json with example-config.json

@@ -86,7 +86,7 @@ const ExchangeData = () => {
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
   const nameProjectFilter = nameProject;
   const author = "Loise";
-  const url = config.REDIRECT_URI
+  const url = config.auth_server
   
   useEffect(() => {
     const fetchData = async () => {

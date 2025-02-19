@@ -8,6 +8,7 @@ import {
   Box,
   Typography,
   CardContent,
+  Grid2,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
@@ -79,10 +80,11 @@ const ExchangeData = () => {
 
   //     fetchOrganizations();
   // }, []);
+
   const { bcvRef } = useContext(bcvContext);
   const bookName = bcvRef.current.bookCode;
-  const chapter = bcvRef.current.chapter;
-  const verse = bcvRef.current.verse;
+  const chapter = bcvRef.current.chapterNum;
+  const verse = bcvRef.current.verseNum;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
   const nameProjectFilter = nameProject;
   const author = "Loise";
@@ -357,13 +359,13 @@ const ExchangeData = () => {
             </CardContent>
           )}
 
-          <Box
+          <Grid2
             component="form"
             onSubmit={handleCreateConversation}
            className="text-box-flex-direction"
           >
             {showDescription && (
-              <Box className="text-box">
+              <Grid2 className="text-box" item xs={4}>
                 <TextField
                   name="description"
                   placeholder="Quick description"
@@ -375,10 +377,10 @@ const ExchangeData = () => {
                   className="text-block-message"
                   required
                 />
-              </Box>
+              </Grid2>
             )}
 
-            <Box className="text-box">
+            <Grid2 className="text-box" item xs={8}>
               <TextField
                 name="newMessage"
                 placeholder={`Send a message about ${nameProject}`}
@@ -397,8 +399,8 @@ const ExchangeData = () => {
               >
                 <SendIcon className="iconbutton" />
               </Button>
-            </Box>
-          </Box>
+            </Grid2>
+          </Grid2>
         </Box>
       </Box>
     </Box>

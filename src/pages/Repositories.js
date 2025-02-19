@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { bcvContext} from "pithekos-lib";
+import { bcvContext } from "pithekos-lib";
 import {
   TextField,
   Button,
@@ -17,7 +17,6 @@ import ArchivePage from "./Archives";
 import Navigation from "../components/Navigation";
 import moment from "moment";
 
-
 const ExchangeData = () => {
   const [filteredRepositories, setFilteredRepositories] = useState([]);
   const [filteredContributions, setFilteredContributions] = useState([]);
@@ -32,6 +31,7 @@ const ExchangeData = () => {
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
   const [showDescription, setShowDescription] = useState(true);
+
   const config = require("../config.json");
   moment.locale("en");
 
@@ -88,8 +88,8 @@ const ExchangeData = () => {
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
   const nameProjectFilter = nameProject;
   const author = "Loise";
-  const url = config.auth_server
-  
+  const url = config.auth_server;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -110,9 +110,7 @@ const ExchangeData = () => {
 
   const fetchContributions = async () => {
     try {
-      const response = await axios.get(
-        `${url}/api/contributions`
-      );
+      const response = await axios.get(`${url}/api/contributions`);
       setContributions(response.data);
       setLoading(false);
     } catch (error) {
@@ -130,10 +128,9 @@ const ExchangeData = () => {
 
   const handleCloture = async (_id) => {
     try {
-      const response = await axios.post(
-        `${url}/api/contributions/cloture`,
-        { _id }
-      );
+      const response = await axios.post(`${url}/api/contributions/cloture`, {
+        _id,
+      });
       if (response.data.success) {
         setContributions(
           contributions.filter((contribution) => contribution._id !== _id)
@@ -238,9 +235,7 @@ const ExchangeData = () => {
             borderRadius: 2,
           }}
         >
-          <Typography className="sizeletters">
-            {nameProject}
-          </Typography>
+          <Typography className="sizeletters">{nameProject}</Typography>
 
           <Box
             sx={{
@@ -252,7 +247,9 @@ const ExchangeData = () => {
             <Typography
               component="a"
               href="syllogos#/contribution"
-              className={`tab ${activeTab === "opened" ? "active" : ""} custom-button-page-project`}
+              className={`tab ${
+                activeTab === "opened" ? "active" : ""
+              } custom-button-page-project`}
               onClick={() => setActiveTab("opened")}
             >
               <MessageIcon sx={{ marginRight: "8px" }} /> OPEN
@@ -260,7 +257,9 @@ const ExchangeData = () => {
 
             <Typography
               component="a"
-              className={`tab ${activeTab === "archived" ? "active" : ""} custom-button-page-project`}
+              className={`tab ${
+                activeTab === "archived" ? "active" : ""
+              } custom-button-page-project`}
               onClick={() => setActiveTab("archived")}
             >
               <ArchiveIcon sx={{ marginRight: "8px" }} /> RESOLVED
@@ -319,15 +318,18 @@ const ExchangeData = () => {
                 Object.keys(groupedContributions)
                   .filter((nameProject) => nameProject === nameProjectFilter)
                   .map((nameProject) => (
-                    <Box key={nameProject} sx={{ marginBottom: 2, minHeight:100 }}>
+                    <Box
+                      key={nameProject}
+                      sx={{ marginBottom: 2, minHeight: 100 }}
+                    >
                       {groupedContributions[nameProject].map((contribution) => (
                         <Box
                           key={contribution._id}
-                         className="text-box-project"
-                        
+                          className="text-box-project"
                         >
                           <Typography variant="subtitle1">
-                            {contribution.nameProject} - {contribution.description}
+                            {contribution.nameProject} -{" "}
+                            {contribution.description}
                           </Typography>
 
                           <Box className="text-box">
@@ -360,12 +362,14 @@ const ExchangeData = () => {
           )}
 
           <Grid2
+            container
             component="form"
             onSubmit={handleCreateConversation}
-           className="text-box-flex-direction"
+            className="text-box-flex-direction"
+            spacing={2}
           >
-            {showDescription && (
-              <Grid2 className="text-box" item xs={4}>
+            {activeTab === "opened" && showDescription && (
+              <Grid2 xs={4} className="text-box">
                 <TextField
                   name="description"
                   placeholder="Quick description"
@@ -380,26 +384,28 @@ const ExchangeData = () => {
               </Grid2>
             )}
 
-            <Grid2 className="text-box" item xs={8}>
-              <TextField
-                name="newMessage"
-                placeholder={`Send a message about ${nameProject}`}
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                multiline
-                rows={4}
-                fullWidth
-                required
-                className="text-block-message"
-              />
-              <Button
-                type="submit"
-                variant="text"
-                className="button-submit-message"
-              >
-                <SendIcon className="iconbutton" />
-              </Button>
-            </Grid2>
+            {activeTab === "opened" && (
+              <Grid2 xs={showDescription ? 8 : 12} className="text-box">
+                <TextField
+                  name="newMessage"
+                  placeholder={`Send a message about ${nameProject}`}
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  multiline
+                  rows={4}
+                  fullWidth
+                  required
+                  className="text-block-message"
+                />
+                <Button
+                  type="submit"
+                  variant="text"
+                  className="button-submit-message"
+                >
+                  <SendIcon className="iconbutton" />
+                </Button>
+              </Grid2>
+            )}
           </Grid2>
         </Box>
       </Box>

@@ -371,25 +371,26 @@ const ExchangeData = () => {
             onSubmit={handleCreateConversation}
             className="text-box-flex-direction"
             spacing={2}
+            direction="column" // Permet d'aligner les éléments verticalement
           >
             {activeTab === "opened" && showDescription && (
-              <Grid2 xs={4} className="text-box">
+              <Box sx={{ width: "100%" }} className="text-box">
                 <TextField
                   name="description"
                   placeholder="Quick description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   multiline
-                  rows={4}
+                  rows={2}
                   fullWidth
                   className="text-block-message"
                   required
                 />
-              </Grid2>
+              </Box>
             )}
 
             {activeTab === "opened" && (
-              <Grid2 xs={showDescription ? 8 : 12} className="text-box">
+              <Box sx={{ width: "100%" }} className="text-box">
                 <TextField
                   name="newMessage"
                   placeholder={`Send a message about ${nameProject}`}
@@ -405,10 +406,11 @@ const ExchangeData = () => {
                   type="submit"
                   variant="text"
                   className="button-submit-message"
+                  sx={{ float: "right" }} // Pour aligner le bouton à droite
                 >
                   <SendIcon className="iconbutton" />
                 </Button>
-              </Grid2>
+              </Box>
             )}
           </Grid2>
         </Box>

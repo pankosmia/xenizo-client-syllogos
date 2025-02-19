@@ -303,6 +303,7 @@ const ExchangeData = () => {
                       </Typography>
                     )}
                   </Box>
+
                   <Button
                     onClick={() => {
                       setActiveDiscussionId(null);
@@ -333,17 +334,20 @@ const ExchangeData = () => {
                           </Typography>
 
                           <Box className="text-box">
-                            <Button
-                              onClick={() =>
-                                handleViewDiscussion(
-                                  contribution._id,
-                                  groupedContributions[nameProjectFilter]
-                                )
-                              }
-                              className="button-afficher"
-                            >
-                              Afficher
-                            </Button>
+                            {activeTab === "opened" && showDescription && (
+                              <Button
+                                onClick={() =>
+                                  handleViewDiscussion(
+                                    contribution._id,
+                                    groupedContributions[nameProjectFilter]
+                                  )
+                                }
+                                className="button-afficher"
+                              >
+                                Afficher
+                              </Button>
+                            )}
+
                             {contribution.statut !== "cloture" && (
                               <Button
                                 onClick={() => handleCloture(contribution._id)}

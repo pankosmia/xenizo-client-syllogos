@@ -413,6 +413,7 @@ const ExchangeData = () => {
               </Box>
             )}
           </Grid2>
+          
         </Box>
       </Box>
     </Box>

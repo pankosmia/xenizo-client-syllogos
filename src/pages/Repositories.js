@@ -82,9 +82,9 @@ const ExchangeData = () => {
   // }, []);
 
   const { bcvRef } = useContext(bcvContext);
-  const bookName = bcvRef.current.bookCode;
-  const chapter = bcvRef.current.chapterNum;
-  const verse = bcvRef.current.verseNum;
+  const bookName = bcvRef.current.book_code;
+  const chapter = bcvRef.current.chapter;
+  const verse = bcvRef.current.verse;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
   const nameProjectFilter = nameProject;
   const author = "Loise";
@@ -110,7 +110,7 @@ const ExchangeData = () => {
 
   const fetchContributions = async () => {
     try {
-      const response = await axios.get(`${url}/api/contributions`);
+      const response = await axios.get(`${url}/contributions`);
       setContributions(response.data);
       setLoading(false);
     } catch (error) {
@@ -128,7 +128,7 @@ const ExchangeData = () => {
 
   const handleCloture = async (_id) => {
     try {
-      const response = await axios.post(`${url}/api/contributions/cloture`, {
+      const response = await axios.post(`${url}/contributions/cloture`, {
         _id,
       });
       if (response.data.success) {
@@ -171,7 +171,7 @@ const ExchangeData = () => {
   const fetchMessages = async (id) => {
     try {
       const response = await axios.get(
-        `${url}/api/contributions/${id}/messages`
+        `${url}/contributions/${id}/messages`
       );
       setMessages(response.data);
     } catch (error) {
@@ -213,7 +213,7 @@ const ExchangeData = () => {
     };
     try {
       const response = await axios.post(
-        `${url}/api/contributions`,
+        `${url}/contributions`,
         newConversation
       );
       console.log("Nouvelle contribution créée :", response.data);
@@ -371,7 +371,7 @@ const ExchangeData = () => {
             onSubmit={handleCreateConversation}
             className="text-box-flex-direction"
             spacing={2}
-            direction="column" // Permet d'aligner les éléments verticalement
+            direction="column" 
           >
             {activeTab === "opened" && showDescription && (
               <Box sx={{ width: "100%" }} className="text-box">
@@ -406,7 +406,7 @@ const ExchangeData = () => {
                   type="submit"
                   variant="text"
                   className="button-submit-message"
-                  sx={{ float: "right" }} // Pour aligner le bouton à droite
+                  sx={{ float: "right" }} 
                 >
                   <SendIcon className="iconbutton" />
                 </Button>

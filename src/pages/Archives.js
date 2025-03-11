@@ -19,19 +19,11 @@ const ArchivePage = () => {
   const config = require("../config.json");
 
   useEffect(() => {
-    // const sessionToken = Cookies.get('session'); // Vérification du cookie de session
-
-    // if (!sessionToken) {
-    //     setLoading(false);
-    //     navigate('/client'); // Redirection vers la page de connexion
-    //     return;
-    // }
-
     const url = config.auth_server;
 
     const fetchArchivedContributions = async () => {
       try {
-        const response = await axios.get(`${url}/api/contributions/archived`);
+        const response = await axios.get(`${url}/contributions/archived`);
         const grouped = groupArchivesByTitleAndProject(response.data);
         setGroupedArchives(grouped);
         setArchivedContributions(response.data);

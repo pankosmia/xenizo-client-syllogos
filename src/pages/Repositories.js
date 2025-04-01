@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { bcvContext } from "pithekos-lib";
 import {
   TextField,
@@ -31,7 +30,7 @@ const ExchangeData = () => {
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
   const [showDescription, setShowDescription] = useState(true);
-
+  const [organisations, setOrganisations] = useState();
   const config = require("../config.json");
   moment.locale("en");
 

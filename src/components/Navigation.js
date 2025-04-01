@@ -43,6 +43,16 @@ function Navigation() {
           >
             Contribution
           </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            to="/organisation"
+            sx={{
+              color: location.pathname === "/organisation" ? "black" : "white",
+            }}
+          >
+            Organisation
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>

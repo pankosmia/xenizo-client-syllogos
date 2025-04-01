@@ -13,6 +13,7 @@ import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import ArchivePage from "./Archives";
+import PageProjectName from "./Project";
 import Navigation from "../components/Navigation";
 import moment from "moment";
 
@@ -31,6 +32,8 @@ const ExchangeData = () => {
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
   const [showDescription, setShowDescription] = useState(true);
   const [organisations, setOrganisations] = useState();
+  const [showFields, setShowFields] = useState(false);
+
   const config = require("../config.json");
   moment.locale("en");
 
@@ -81,9 +84,9 @@ const ExchangeData = () => {
   // }, []);
 
   const { bcvRef } = useContext(bcvContext);
-  const bookName = bcvRef.current.book_code;
-  const chapter = bcvRef.current.chapter;
-  const verse = bcvRef.current.verse;
+  const bookName = bcvRef.current.bookCode;
+  const chapter = bcvRef.current.chapterNum;
+  const verse = bcvRef.current.verseNum;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
   const nameProjectFilter = nameProject;
   const author = "Loise";
@@ -169,9 +172,7 @@ const ExchangeData = () => {
 
   const fetchMessages = async (id) => {
     try {
-      const response = await axios.get(
-        `${url}/contributions/${id}/messages`
-      );
+      const response = await axios.get(`${url}/contributions/${id}/messages`);
       setMessages(response.data);
     } catch (error) {
       console.error("Erreur lors de la récupération des messages:", error);
@@ -235,7 +236,6 @@ const ExchangeData = () => {
           }}
         >
           <Typography className="sizeletters">{nameProject}</Typography>
-
           <Box
             sx={{
               display: "flex",
@@ -264,113 +264,57 @@ const ExchangeData = () => {
               <ArchiveIcon sx={{ marginRight: "8px" }} /> RESOLVED
             </Typography>
           </Box>
+          {/* Affichage conditionnel du contenu selon l'onglet actif */}
+          {activeTab === "opened" ? <PageProjectName /> : <ArchivePage />}
+          <CardContent>
+            {activeDiscussionId ? (
+              <Box>
+                <Box sx={{ maxHeight: 300, overflowY: "auto", padding: 2 }}>
+                  {messages.length > 0 ? (
+                    messages.map((message, index) => {
+                      const formattedDate = moment(message.createdAt).isValid()
+                        ? moment(message.createdAt).format(
+                            "DD MMM YYYY • hh:mm A"
+                          )
+                        : "Date invalide";
 
-          {activeTab === "archived" ? (
-            <ArchivePage />
-          ) : (
-            <CardContent>
-              {activeDiscussionId ? (
-                <Box>
-                  <Box sx={{ maxHeight: 300, overflowY: "auto", padding: 2 }}>
-                    {messages.length > 0 ? (
-                      messages.map((message, index) => {
-                        const formattedDate = moment(
-                          message.createdAt
-                        ).isValid()
-                          ? moment(message.createdAt).format(
-                              "DD MMM YYYY • hh:mm A"
-                            )
-                          : "Date invalide";
-
-                        return (
-                          <Box key={index} sx={{ marginBottom: 1 }}>
-                            <strong>
-                              {message.author} • {formattedDate}
-                            </strong>
-                            <br />
-                            <Typography
-                              sx={{ paddingTop: 2, paddingBottom: 2 }}
-                            >
-                              {message.content}
-                            </Typography>
-                          </Box>
-                        );
-                      })
-                    ) : (
-                      <Typography variant="body2" color="textSecondary">
-                        Aucun message pour cette discussion.
-                      </Typography>
-                    )}
-                  </Box>
-
-                  <Button
-                    onClick={() => {
-                      setActiveDiscussionId(null);
-                      setShowDescription(true);
-                    }}
-                    variant="outlined"
-                    className="button-return"
-                  >
-                    Retour
-                  </Button>
-                </Box>
-              ) : (
-                Object.keys(groupedContributions)
-                  .filter((nameProject) => nameProject === nameProjectFilter)
-                  .map((nameProject) => (
-                    <Box
-                      key={nameProject}
-                      sx={{ marginBottom: 2, minHeight: 100 }}
-                    >
-                      {groupedContributions[nameProject].map((contribution) => (
-                        <Box
-                          key={contribution._id}
-                          className="text-box-project"
-                        >
-                          <Typography variant="subtitle1">
-                            {contribution.nameProject} -{" "}
-                            {contribution.description}
+                      return (
+                        <Box key={index} sx={{ marginBottom: 1 }}>
+                          <strong>
+                            {message.author} • {formattedDate}
+                          </strong>
+                          <br />
+                          <Typography sx={{ paddingTop: 2, paddingBottom: 2 }}>
+                            {message.content}
                           </Typography>
-
-                          <Box className="text-box">
-                            {activeTab === "opened" && showDescription && (
-                              <Button
-                                onClick={() =>
-                                  handleViewDiscussion(
-                                    contribution._id,
-                                    groupedContributions[nameProjectFilter]
-                                  )
-                                }
-                                className="button-afficher"
-                              >
-                                Afficher
-                              </Button>
-                            )}
-
-                            {contribution.statut !== "cloture" && (
-                              <Button
-                                onClick={() => handleCloture(contribution._id)}
-                                className="button-close"
-                              >
-                                Clôturer
-                              </Button>
-                            )}
-                          </Box>
                         </Box>
-                      ))}
-                    </Box>
-                  ))
-              )}
-            </CardContent>
-          )}
-
+                      );
+                    })
+                  ) : (
+                    <Typography variant="body2" color="textSecondary">
+                      Aucun message pour cette discussion.
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            ) : (
+              Object.keys(groupedContributions)
+                .filter((nameProject) => nameProject === nameProjectFilter)
+                .map((nameProject) => (
+                  <Box
+                    key={nameProject}
+                    sx={{ marginBottom: 2, minHeight: 100 }}
+                  ></Box>
+                ))
+            )}
+          </CardContent>
           <Grid2
             container
             component="form"
             onSubmit={handleCreateConversation}
             className="text-box-flex-direction"
             spacing={2}
-            direction="column" 
+            direction="column"
           >
             {activeTab === "opened" && showDescription && (
               <Box sx={{ width: "100%" }} className="text-box">
@@ -405,14 +349,13 @@ const ExchangeData = () => {
                   type="submit"
                   variant="text"
                   className="button-submit-message"
-                  sx={{ float: "right" }} 
+                  sx={{ float: "right" }}
                 >
                   <SendIcon className="iconbutton" />
                 </Button>
               </Box>
             )}
           </Grid2>
-          
         </Box>
       </Box>
     </Box>

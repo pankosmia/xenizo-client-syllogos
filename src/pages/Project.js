@@ -190,7 +190,6 @@ const PageProjectName = () => {
                   <Typography variant="subtitle1">
                     {contribution.nameProject} - {contribution.description}
                   </Typography>
-
                   <CardContent>
                     {activeDiscussionId === contribution._id ? (
                       <Box>

@@ -1,8 +1,6 @@
 import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
 import Navigation from "../components/Navigation";
 const Home = () => {
   const [projectNames, setProjectNames] = useState([]);
@@ -50,9 +48,6 @@ const Home = () => {
 
   return (
     <div>
-      <Fab color="secondary" size="small" aria-label="add">
-        <AddIcon />
-      </Fab>
       <Navigation />
       <h2>Choisissez un dépôt</h2>
       <select value={selectedRepo} onChange={handleChange}>

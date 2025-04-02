@@ -58,16 +58,16 @@ const ArchivePage = () => {
     console.log(title);
   };
 
-  const toggleDescriptionExpansive = (description,contributionId)=>{
-    setExpandedDescription((prevDescription)=>(prevDescription === description ? null : description));
-    setExpandedDiscussion((prevId) => (prevId === contributionId ? null : contributionId));
+  // const toggleDescriptionExpansive = (description,contributionId)=>{
+  //   setExpandedDescription((prevDescription)=>(prevDescription === description ? null : description));
+  //   setExpandedDiscussion((prevId) => (prevId === contributionId ? null : contributionId));
 
-  console.log("Description:", description);
-  console.log("Discussion ID:", contributionId);
-  };
+  // console.log("Description:", description);
+  // console.log("Discussion ID:", contributionId);
+  // };
 
   return (
-    <Box sx={{ maxWidth: 800, margin: "auto",padding:"16px"}}>
+    <Box sx={{ width:"auto",height:"auto", margin: "auto",padding:"16px"}}>
       {error && <Typography color="error">{error}</Typography>}
       {Object.keys(groupedArchives).length > 0 ? (
         Object.keys(groupedArchives).map((projectTitle) => {

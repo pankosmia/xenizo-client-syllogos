@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { bcvContext } from "pithekos-lib";
-import { TextField, Button, Box, Typography, Grid2 } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  CardContent,
+  Grid2,
+} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
 import Navigation from "../components/Navigation";
+
 import moment from "moment";
 
 const PageProjectName = () => {
@@ -14,7 +22,6 @@ const PageProjectName = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   //const [author, setAuthor] = useState("");
-  const [activeTab, setActiveTab] = useState("opened");
   const [description, setDescription] = useState("");
   const [newMessage, setNewMessage] = useState("");
   const [contributions, setContributions] = useState([]);
@@ -101,26 +108,23 @@ const PageProjectName = () => {
     }
   };
   useEffect(() => {
-    let interval;
-    if (activeDiscussionId) {
-      fetchMessages(activeDiscussionId);
+    if (!activeDiscussionId) return;
 
-      interval = setInterval(() => {
-        fetchMessages(activeDiscussionId);
-      }, 1000);
-    }
+    fetchMessages(activeDiscussionId);
+    const interval = setInterval(() => {
+      fetchMessages(activeDiscussionId);
+    }, 1000);
 
     return () => clearInterval(interval);
   }, [activeDiscussionId, nameProjectFilter]);
 
   useEffect(() => {
-    let internal;
-    if (newMessage) {
-      internal = setInterval(() => {
-        fetchContributions(newMessage);
-      }, 3000);
-    }
-  }, [newMessage]);
+    const interval = setInterval(() => {
+      fetchContributions();
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchMessages = async (id) => {
     try {
@@ -150,103 +154,148 @@ const PageProjectName = () => {
     );
   });
 
-  const handleCreateConversation = async (e) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
 
-    const newConversation = {
-      nameProject,
-      bookName,
-      chapter,
-      verse,
-      description: description,
+    if (!newMessage.trim() || !activeDiscussionId) return;
+
+    const sendMessage = {
       author: author,
       content: newMessage,
-      createdAt: new Date(),
     };
+
     try {
       const response = await axios.post(
-        `${url}/contributions`,
-        newConversation
+        `${url}/contributions/${activeDiscussionId}/messages`,
+        sendMessage
       );
-      console.log("Nouvelle contribution créée :", response.data);
+      console.log("Nouveau message ajouté", response.data);
+
       setNewMessage("");
-      setDescription("");
-    } catch (error) {
-      console.error("Erreur lors de la création de la contribution :", error);
+      fetchMessages(activeDiscussionId);
+    } catch (err) {
+      console.error("Erreur lors de la création d'un nouveau message", err);
     }
   };
 
   return (
     <Box>
-      <Box sx={{ maxWidth: 800, margin: "auto", padding: 3 }}>
+      <Box sx={{ width: "auto", height: "auto", margin: "auto", padding: 3 }}>
         {Object.keys(groupedContributions)
-          .filter((projectName) => projectName === nameProjectFilter) // Correction ici
+          .filter((projectName) => projectName === nameProjectFilter)
           .map((projectName) => (
-            <Box key={projectName} sx={{ marginBottom: 2, minHeight: 100 }}>
+            <Box key={projectName}>
               {groupedContributions[projectName].map((contribution) => (
                 <Box key={contribution._id} className="text-box-project">
                   <Typography variant="subtitle1">
                     {contribution.nameProject} - {contribution.description}
                   </Typography>
 
-                  <Box className="text-box">
-                    {activeTab === "opened" && showDescription && (
-                      <>
+                  <CardContent>
+                    {activeDiscussionId === contribution._id ? (
+                      <Box>
+                        <Box
+                          sx={{
+                            maxHeight: 500,
+                            width: "auto",
+                            overflowY: "auto",
+                            padding: 2,
+                          }}
+                        >
+                          {messages.length > 0 ? (
+                            messages.map((message, index) => {
+                              const formattedDate = moment(
+                                message.createdAt
+                              ).isValid()
+                                ? moment(message.createdAt).format(
+                                    "DD MMM YYYY • hh:mm A"
+                                  )
+                                : "Date invalide";
+
+                              return (
+                                <Box key={index} sx={{ marginBottom: 1 }}>
+                                  <strong>
+                                    {message.author} • {formattedDate}
+                                  </strong>
+                                  <br />
+                                  <Typography
+                                    sx={{ paddingTop: 2, paddingBottom: 2 }}
+                                  >
+                                    {message.content}
+                                  </Typography>
+                                </Box>
+                              );
+                            })
+                          ) : (
+                            <Typography variant="body2" color="textSecondary">
+                              Aucun message pour cette discussion.
+                            </Typography>
+                          )}
+                        </Box>
+                        <Box
+                          component="form"
+                          onSubmit={handleSendMessage}
+                          sx={{ width: "100%", position: "sticky" }}
+                          className="text-box"
+                        >
+                          <TextField
+                            name="newMessage"
+                            placeholder={`Send a message about ${nameProject}`}
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            multiline
+                            rows={4}
+                            fullWidth
+                            required
+                            className="text-block-message"
+                          />
+                          <Button
+                            type="submit"
+                            variant="text"
+                            className="button-submit-message"
+                            sx={{ float: "right", mt: 1 }}
+                            disabled={!newMessage.trim()}
+                          >
+                            <SendIcon />
+                          </Button>
+                        </Box>
+
                         <Button
-                          onClick={() =>
-                            handleViewDiscussion(
-                              contribution._id,
-                              groupedContributions[nameProjectFilter]
-                            )
-                          }
+                          onClick={() => setActiveDiscussionId(null)}
+                          className="button-afficher"
+                        >
+                          Retour
+                        </Button>
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginTop: 2,
+                        }}
+                      >
+                        <Button
+                          onClick={() => {
+                            handleViewDiscussion(contribution._id);
+                            setActiveDiscussionId(contribution._id);
+                          }}
                           className="button-afficher"
                         >
                           Afficher
                         </Button>
 
-                        <Grid2
-                          container
-                          component="form"
-                          onSubmit={handleCreateConversation}
-                          className="text-box-flex-direction"
-                          spacing={2}
-                          direction="column"
-                        >
-                          <Box sx={{ width: "100%" }} className="text-box">
-                            <TextField
-                              name="newMessage"
-                              placeholder={`Send a message about ${nameProjectFilter}`}
-                              value={newMessage}
-                              onChange={(e) => setNewMessage(e.target.value)}
-                              multiline
-                              rows={4}
-                              fullWidth
-                              required
-                              className="text-block-message"
-                            />
-                            <Button
-                              type="submit"
-                              variant="text"
-                              className="button-submit-message"
-                              sx={{ float: "right" }}
-                              disabled={!newMessage.trim()}
-                            >
-                              <SendIcon className="iconbutton" />
-                            </Button>
-                          </Box>
-                        </Grid2>
-                      </>
+                        {contribution.statut !== "cloture" && (
+                          <Button
+                            onClick={() => handleCloture(contribution._id)}
+                            className="button-close"
+                          >
+                            Clôturer
+                          </Button>
+                        )}
+                      </Box>
                     )}
-
-                    {contribution.statut !== "cloture" && (
-                      <Button
-                        onClick={() => handleCloture(contribution._id)}
-                        className="button-close"
-                      >
-                        Clôturer
-                      </Button>
-                    )}
-                  </Box>
+                  </CardContent>
                 </Box>
               ))}
             </Box>

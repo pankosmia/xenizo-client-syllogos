@@ -26,32 +26,12 @@ function Navigation() {
           <Button
             color="inherit"
             component={Link}
-            to="/profile"
-            sx={{
-              color: location.pathname === "/profile" ? "black" : "white",
-            }}
-          >
-            Profil
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
             to="/contribution"
             sx={{
               color: location.pathname === "/contribution" ? "black" : "white",
             }}
           >
             Contribution
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
-            to="/organisation"
-            sx={{
-              color: location.pathname === "/organisation" ? "black" : "white",
-            }}
-          >
-            Organisation
           </Button>
         </Box>
       </Toolbar>

@@ -1,64 +1,62 @@
-import React from "react";
+import React, { useContext } from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import Navigation from "../components/Navigation";
+import { currentProjectContext } from "pithekos-lib";
 const Home = () => {
   const [projectNames, setProjectNames] = useState([]);
   const [selectedRepo, setSelectedRepo] = useState("");
   const [collaborators, setCollaborators] = useState([]);
+  const { currentProjectRef } = useContext(currentProjectContext);
   const config = require("../config.json");
   const url = config.auth_server;
+  const urlLocal = config.rust_server;
 
   // Recuperation des dépots du serveur
   const fetchRepos = async () => {
     try {
-      const response = await axios.get(`${url}/choose-repos`);
-      setProjectNames(response.data);
+      const response = await axios.get(
+        `${urlLocal}/app-state/current-project/`
+      );
       console.log(response.data);
+      const currentProjectName = response.data.project;
+      const currentOrganisationName = response.data.organization;
+      console.log(`Project selec :`, currentProjectName);
+      console.log(`orga selec :`, currentOrganisationName);
+
+      if (response.data !== null) {
+        const returnProject = await axios.get(`${url}/repos-collaborators?organisation_name=${currentOrganisationName}&project_name=${currentProjectName}&client_code=088cc40d-1a43-405d-b846-df27e687ed31`);
+        console.log("envoi au serveur", returnProject);
+        setCollaborators(returnProject.data.NameCollaborators);
+      }
     } catch (error) {
       console.error("Erreur lors de la récupération des données:", error);
     }
   };
 
-  if (selectedRepo !== "") {
-    fetch(`${url}/select-project`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ selectProjectName: selectedRepo }),
-    });
-  }
-
-  // const fetchCollaborators = async () => {
-  //   try{
-  //     const response = await axios.get(`${url}/repos-collaborators`);
-  //     setCollaborators(response.data);
-  //     console.log(response.data);
-  //   }catch (err){
-  //     console.error("Erreur lors de la récupération des collaborateurs:",err);
-  //   }
-  // }
   useEffect(() => {
     fetchRepos();
-    //fetchCollaborators();
   }, []);
-
-  const handleChange = (event) => {
-    setSelectedRepo(event.target.value);
-  };
 
   return (
     <div>
       <Navigation />
       <h2>Choisissez un dépôt</h2>
-      <select value={selectedRepo} onChange={handleChange}>
-        <option value="">Sélectionnez un dépôt</option>
-        {projectNames.map((repo) => (
-          <option key={repo} value={repo}>
-            {repo}
-          </option>
-        ))}
-      </select>
+      <p>
+        Project :
+        {!currentProjectRef.current
+          ? "None"
+          : `organisation ${currentProjectRef.current.organization}, Project ${currentProjectRef.current.project}`}
+      </p>
+      {collaborators.length > 0 ? (
+        collaborators.map((collaborator, index) => (
+          <li key={index}>{collaborator.name}</li>
+        ))
+      ) : (
+        <p>Aucun collaborateur trouvé pour ce projet.</p>
+      )}
       {selectedRepo && <p>Dépôt sélectionné: {selectedRepo}</p>}
+      <p></p>
     </div>
   );
 };

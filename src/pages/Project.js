@@ -10,8 +10,6 @@ import {
   Grid2,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import MessageIcon from "@mui/icons-material/Message";
-import Navigation from "../components/Navigation";
 
 import moment from "moment";
 

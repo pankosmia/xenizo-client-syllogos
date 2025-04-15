@@ -1,20 +1,15 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { bcvContext } from "pithekos-lib";
-import {
-  TextField,
-  Button,
-  Box,
-} from "@mui/material";
+import { TextField, Button, Box } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import moment from "moment";
 
 const NewContributionPage = () => {
-
   const [activeTab, setActiveTab] = useState("opened");
-  const [showForm,setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
   const [description, setDescription] = useState("");
   const [newMessage, setNewMessage] = useState("");
 
@@ -71,52 +66,52 @@ const NewContributionPage = () => {
       </Fab>
 
       {showForm && (
-          <Box
-            component="form"
-            onSubmit={handleCreateConversation}
-            className="text-box-flex-direction"
-            sx={{ mt: 2, display:"flex",flexDirection:"column",gap:2 }}
-          >
-            {activeTab === "opened" && (
-              <>
-                <Box sx={{ width: "50%" }} className="text-box">
-                  <TextField
-                    name="description"
-                    placeholder="Quick description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    multiline
-                    rows={2}
-                    fullWidth
-                    className="text-block-message"
-                    required
-                  />
-                </Box>
+        <Box
+          component="form"
+          onSubmit={handleCreateConversation}
+          className="text-box-flex-direction"
+          sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}
+        >
+          {activeTab === "opened" && (
+            <>
+              <Box sx={{ width: "50%" }} className="text-box">
+                <TextField
+                  name="description"
+                  placeholder="Quick description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  multiline
+                  rows={2}
+                  fullWidth
+                  className="text-block-message"
+                  required
+                />
+              </Box>
 
-                <Box sx={{ width: "50%" }} className="text-box">
-                  <TextField
-                    name="newMessage"
-                    placeholder="Send a message"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    multiline
-                    rows={4}
-                    fullWidth
-                    required
-                    className="text-block-message"
-                  />
-                  <Button
-                    type="submit"
-                    variant="text"
-                    className="button-submit-message"
-                    sx={{ float: "right" }}
-                  >
-                    <SendIcon className="iconbutton" />
-                  </Button>
-                </Box>
-              </>
-            )}
-          </Box>
+              <Box sx={{ width: "50%" }} className="text-box">
+                <TextField
+                  name="newMessage"
+                  placeholder={`Send a message about ${nameProject}`}
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  multiline
+                  rows={4}
+                  fullWidth
+                  required
+                  className="text-block-message"
+                />
+                <Button
+                  type="submit"
+                  variant="text"
+                  className="button-submit-message"
+                  sx={{ float: "right" }}
+                >
+                  <SendIcon />
+                </Button>
+              </Box>
+            </>
+          )}
+        </Box>
       )}
     </Box>
   );

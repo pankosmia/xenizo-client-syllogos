@@ -1,18 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import React, { useState,useContext } from "react";
 import { bcvContext } from "pithekos-lib";
 import {
-  TextField,
-  Button,
   Box,
   Typography,
-  CardContent,
-  Grid2,
 } from "@mui/material";
-import SendIcon from "@mui/icons-material/Send";
 import MessageIcon from "@mui/icons-material/Message";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import ArchivePage from "./Archives";
 import PageProjectName from "./Project";
@@ -21,20 +13,7 @@ import NewContributionPage from "./NewContribution";
 import moment from "moment";
 
 const ExchangeData = () => {
-  const [filteredRepositories, setFilteredRepositories] = useState([]);
-  const [messages, setMessages] = useState("");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("opened");
-  const [description, setDescription] = useState("");
-  const [newMessage, setNewMessage] = useState("");
-  const [contributions, setContributions] = useState([]);
-  const [activeDiscussionId, setActiveDiscussionId] = useState(null);
-  const [showDescription, setShowDescription] = useState(true);
-  const [organisations, setOrganisations] = useState();
-  const [showFields, setShowFields] = useState(false);
-
-  const config = require("../config.json");
   moment.locale("en");
 
   //console.log("groupe de contribution:", groupedContributions);
@@ -88,7 +67,7 @@ const ExchangeData = () => {
         <NewContributionPage />
       </Box>
 
-      <Box sx={{ width: "auto", height: "auto", margin: "auto", padding: 3 }}>
+      <Box sx={{ width: "auto", height: "auto", margin: "auto", padding: 3, minWidth:344, maxWidth:600}}>
         <Box
           sx={{
             border: "1px solid #ddd",

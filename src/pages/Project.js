@@ -7,14 +7,14 @@ import {
   Box,
   Typography,
   CardContent,
-  Grid2,
+  Chip,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 
 import moment from "moment";
 
 const PageProjectName = () => {
-  const [filteredRepositories, setFilteredRepositories] = useState([]);
+  //const [filteredRepositories, setFilteredRepositories] = useState([]);
   const [filteredContributions, setFilteredContributions] = useState([]);
   const [messages, setMessages] = useState("");
   const [error, setError] = useState(null);
@@ -26,8 +26,8 @@ const PageProjectName = () => {
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
   const [showDescription, setShowDescription] = useState(true);
-  const [organisations, setOrganisations] = useState();
-  const [showFields, setShowFields] = useState(false);
+  //const [organisations, setOrganisations] = useState();
+  //const [showFields, setShowFields] = useState(false);
 
   const config = require("../config.json");
   moment.locale("en");
@@ -196,7 +196,9 @@ const PageProjectName = () => {
                             maxHeight: 500,
                             width: "auto",
                             overflowY: "auto",
-                            padding: 2,
+                            minHeight: 344,
+                            border: "none",
+                            background: "none",
                           }}
                         >
                           {messages.length > 0 ? (
@@ -211,15 +213,34 @@ const PageProjectName = () => {
 
                               return (
                                 <Box key={index} sx={{ marginBottom: 1 }}>
-                                  <strong>
-                                    {message.author} • {formattedDate}
-                                  </strong>
-                                  <br />
-                                  <Typography
-                                    sx={{ paddingTop: 2, paddingBottom: 2 }}
+                                  <Box
+                                    display="flex"
+                                    alignItems="center"
+                                    my={2}
                                   >
-                                    {message.content}
+                                    <Box
+                                      flex={1}
+                                      height="1px"
+                                      bgcolor="orange"
+                                    />
+                                    <Chip
+                                      label="New"
+                                      size="small"
+                                      sx={{
+                                        backgroundColor: "orange",
+                                        color: "white",
+                                      }}
+                                    />
+                                  </Box>
+                                  <Typography
+                                    variant="body2"
+                                    paddingBottom={1}
+                                    color="gray"
+                                  >
+                                    {message.author} • {formattedDate}
                                   </Typography>
+                                  <Typography>{message.content}</Typography>
+                                  
                                 </Box>
                               );
                             })
@@ -232,7 +253,12 @@ const PageProjectName = () => {
                         <Box
                           component="form"
                           onSubmit={handleSendMessage}
-                          sx={{ width: "100%", position: "sticky" }}
+                          sx={{
+                            width: "100%",
+                            display: "flex",
+                            alignItems: "flex-end", 
+                            gap: 1,
+                          }}
                           className="text-box"
                         >
                           <TextField
@@ -246,11 +272,18 @@ const PageProjectName = () => {
                             required
                             className="text-block-message"
                           />
+
                           <Button
                             type="submit"
-                            variant="text"
-                            className="button-submit-message"
-                            sx={{ float: "right", mt: 1 }}
+                            variant="button" 
+                            sx={{
+                              minWidth: "auto", 
+                              height: 56, 
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              padding: 0, 
+                            }}
                             disabled={!newMessage.trim()}
                           >
                             <SendIcon />

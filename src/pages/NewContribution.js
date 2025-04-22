@@ -1,11 +1,13 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
 import { bcvContext } from "pithekos-lib";
-import { TextField, Button, Box } from "@mui/material";
+import { TextField, Button, Box, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import moment from "moment";
+import Checkbox from "@mui/material/Checkbox";
+
 
 const NewContributionPage = () => {
   const [activeTab, setActiveTab] = useState("opened");
@@ -74,6 +76,12 @@ const NewContributionPage = () => {
         >
           {activeTab === "opened" && (
             <>
+              <Box>
+                <Typography>Choix des collaborateurs</Typography>
+                <Checkbox />
+                <Checkbox />
+                <Checkbox />
+              </Box>
               <Box sx={{ width: "50%" }} className="text-box">
                 <TextField
                   name="description"

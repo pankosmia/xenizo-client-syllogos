@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Navigation from "../components/Navigation";
 import { currentProjectContext } from "pithekos-lib";
 const Home = () => {
-  const [projectNames, setProjectNames] = useState([]);
   const [selectedRepo, setSelectedRepo] = useState("");
   const [collaborators, setCollaborators] = useState([]);
   const { currentProjectRef } = useContext(currentProjectContext);
@@ -12,7 +11,7 @@ const Home = () => {
   const url = config.auth_server;
   const urlLocal = config.rust_server;
 
-  // Recuperation des dépots du serveur
+  // Récupération des dépots du serveur
   const fetchRepos = async () => {
     try {
       const response = await axios.get(
@@ -26,6 +25,7 @@ const Home = () => {
 
       if (response.data !== null) {
         const returnProject = await axios.get(`${urlLocal}/gitea/my-collaborators/xenizo_syllogos/${currentOrganisationName}/${currentProjectName}`);
+        //const returnProject = await axios.get(`${url}/repos-collaborators?organisation_name=${currentOrganisationName}&project_name=${currentProjectName}&client_code=bb4d79e8-4611-42f6-838c-ddf899c5b8d7`);
         console.log("envoi au serveur", returnProject);
         setCollaborators(returnProject.data.NameCollaborators);
       }

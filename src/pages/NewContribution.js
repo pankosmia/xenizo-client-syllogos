@@ -1,13 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext,useEffect } from "react";
 import axios from "axios";
-import { bcvContext } from "pithekos-lib";
+import { bcvContext, currentProjectContext } from "pithekos-lib";
 import { TextField, Button, Box, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import moment from "moment";
 import Checkbox from "@mui/material/Checkbox";
-
 
 const NewContributionPage = () => {
   const [activeTab, setActiveTab] = useState("opened");
@@ -25,11 +24,12 @@ const NewContributionPage = () => {
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
   const author = "Loise";
   const url = config.auth_server;
+  const { currentProjectRef } = useContext(currentProjectContext);
 
   const handleFabClick = () => {
     setShowForm((prev) => !prev);
   };
-
+ 
   const handleCreateConversation = async (e) => {
     e.preventDefault();
 
@@ -42,6 +42,8 @@ const NewContributionPage = () => {
       author: author,
       content: newMessage,
       createdAt: new Date(),
+      nameOrganisation:currentProjectRef.current.organization ,
+      nameRepository:currentProjectRef.current.project
     };
     try {
       const response = await axios.post(
@@ -56,8 +58,15 @@ const NewContributionPage = () => {
     }
   };
 
+
   return (
     <Box>
+      <p>
+        Project :
+        {!currentProjectRef.current
+          ? "None"
+          : `organisation ${currentProjectRef.current.organization}, Project ${currentProjectRef.current.project}`}
+      </p>
       <Fab
         color="secondary"
         size="small"

@@ -16,44 +16,6 @@ const ExchangeData = () => {
   const [activeTab, setActiveTab] = useState("opened");
   moment.locale("en");
 
-  //console.log("groupe de contribution:", groupedContributions);
-
-  // useEffect(() => {
-  //     const fetchOrganizations = async () => {
-  //         const sessionToken = Cookies.get("session");
-  //         if (!sessionToken) {
-  //             setError("Veuillez vous connecter");
-  //             setLoading(false);
-  //             return;
-  //         }
-
-  //         try {
-  //             const userResponse = await axios.get('/api/user', { params: { session_token: sessionToken } });
-  //             if (userResponse.data && userResponse.data.username) {
-  //                 setUsername(userResponse.data.username);
-  //             } else {
-  //                 setError("Impossible de récupérer le nom d'utilisateur.");
-  //                 setLoading(false);
-  //                 return;
-  //             }
-
-  //             const response = await axios.get('/api/organizations', {
-  //                 params: { session_token: sessionToken },
-  //             });
-
-  //             setOrganizations(response.data);
-
-  //         } catch (err) {
-  //             setError("Impossible de récupérer les organisations.");
-  //             setLoading(false);
-  //         } finally {
-  //             setLoading(false);
-  //         }
-  //     };
-
-  //     fetchOrganizations();
-  // }, []);
-
   const { bcvRef } = useContext(bcvContext);
   const bookName = bcvRef.current.bookCode;
   const chapter = bcvRef.current.chapterNum;

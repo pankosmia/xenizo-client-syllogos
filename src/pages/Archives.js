@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-//import '../styles/App.css';
 import { Box, Typography, Button, Collapse } from "@mui/material";
 import moment from "moment";
 
@@ -104,7 +103,6 @@ const ArchivePage = () => {
                           {archive.description ||
                             "Pas de description disponible"}
                         </Typography>
-                        {/* <Button>{expandedDescription === description ? "o" : "c"} </Button> */}
                         {archive.messages && archive.messages.length > 0 ? (
                           archive.messages.map((message, index) => {
                             const formattedDate = moment(

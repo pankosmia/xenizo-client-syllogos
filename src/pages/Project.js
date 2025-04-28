@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { bcvContext } from "pithekos-lib";
+import { bcvContext,currentProjectContext } from "pithekos-lib";
 import {
   TextField,
   Button,
@@ -10,11 +10,9 @@ import {
   Chip,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-
 import moment from "moment";
 
 const PageProjectName = () => {
-  //const [filteredRepositories, setFilteredRepositories] = useState([]);
   const [filteredContributions, setFilteredContributions] = useState([]);
   const [messages, setMessages] = useState("");
   const [error, setError] = useState(null);
@@ -26,28 +24,22 @@ const PageProjectName = () => {
   const [activeProjectCount, setActiveProjectCount] = useState(0);
   const [activeDiscussionId, setActiveDiscussionId] = useState(null);
   const [showDescription, setShowDescription] = useState(true);
-  //const [organisations, setOrganisations] = useState();
-  //const [showFields, setShowFields] = useState(false);
-
+  const [currentProjectName, setCurrentProjectName] = useState("");
+  const[currentOrganisationName,setCurrentOrganisationName]=useState("");
   const config = require("../config.json");
   moment.locale("en");
 
-  const groupedContributions = contributions?.length
-    ? contributions.reduce((acc, contribution) => {
-        if (!acc[contribution.nameProject]) acc[contribution.nameProject] = [];
-        acc[contribution.nameProject].push(contribution);
-        return acc;
-      }, {})
-    : {};
-
   const { bcvRef } = useContext(bcvContext);
+  const { currentProjectRef } = useContext(currentProjectContext);
   const bookName = bcvRef.current.bookCode;
   const chapter = bcvRef.current.chapterNum;
   const verse = bcvRef.current.verseNum;
   const nameProject = `${bookName}  ${chapter} : ${verse}`;
-  const nameProjectFilter = nameProject;
+  const nameRepository = currentProjectName;
+  const nameProjectFilter = nameRepository;
   const author = "Loise";
   const url = config.auth_server;
+  const urlLocal = config.rust_server;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -77,6 +69,21 @@ const PageProjectName = () => {
       setError("Erreur lors de la récupération des contributions.");
     }
   };
+  //Recuperation du project choisit
+  const fetchRepos = async () => {
+    try {
+      const response = await axios.get(
+        `${urlLocal}/app-state/current-project/`
+      );
+      setCurrentProjectName(response.data.project);
+      setCurrentOrganisationName(response.data.organization);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données:", error);
+    }
+  };
+  useEffect(() => {
+    fetchRepos();
+  }, []);
 
   useEffect(() => {
     const filtered = contributions.filter(
@@ -85,6 +92,7 @@ const PageProjectName = () => {
     setFilteredContributions(filtered);
   }, [contributions, nameProject]);
 
+  // clôturer une contribution
   const handleCloture = async (_id) => {
     try {
       const response = await axios.post(`${url}/contributions/cloture`, {
@@ -105,6 +113,7 @@ const PageProjectName = () => {
       console.error("Erreur lors de la requête de clôture:", error);
     }
   };
+
   useEffect(() => {
     if (!activeDiscussionId) return;
 
@@ -119,8 +128,8 @@ const PageProjectName = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       fetchContributions();
+      fetchRepos();
     }, 3000);
-
     return () => clearInterval(interval);
   }, []);
 
@@ -133,6 +142,7 @@ const PageProjectName = () => {
     }
   };
 
+  // Regarder une discussions
   const handleViewDiscussion = async (id, contributions) => {
     const selectedContribution = contributions.find(
       (contribution) => contribution._id === id
@@ -146,12 +156,7 @@ const PageProjectName = () => {
     }
   };
 
-  Object.keys(groupedContributions).forEach((nameProject) => {
-    groupedContributions[nameProject].sort((a, b) =>
-      a.nameProject.localeCompare(b.nameProject)
-    );
-  });
-
+  // Envoyer des messages
   const handleSendMessage = async (e) => {
     e.preventDefault();
 
@@ -179,11 +184,10 @@ const PageProjectName = () => {
   return (
     <Box>
       <Box sx={{ width: "auto", height: "auto", margin: "auto", padding: 3 }}>
-        {Object.keys(groupedContributions)
-          .filter((projectName) => projectName === nameProjectFilter)
-          .map((projectName) => (
-            <Box key={projectName}>
-              {groupedContributions[projectName].map((contribution) => (
+        {contributions
+          .filter((contribution) => contribution.nameProject === nameProject && contribution.nameRepository === nameRepository)
+          .map((contribution) => (
+            <Box key={nameProject}>
                 <Box key={contribution._id} className="text-box-project">
                   <Typography variant="subtitle1">
                     {contribution.nameProject} - {contribution.description}
@@ -240,7 +244,6 @@ const PageProjectName = () => {
                                     {message.author} • {formattedDate}
                                   </Typography>
                                   <Typography>{message.content}</Typography>
-                                  
                                 </Box>
                               );
                             })
@@ -256,7 +259,7 @@ const PageProjectName = () => {
                           sx={{
                             width: "100%",
                             display: "flex",
-                            alignItems: "flex-end", 
+                            alignItems: "flex-end",
                             gap: 1,
                           }}
                           className="text-box"
@@ -275,14 +278,14 @@ const PageProjectName = () => {
 
                           <Button
                             type="submit"
-                            variant="button" 
+                            variant="button"
                             sx={{
-                              minWidth: "auto", 
-                              height: 56, 
+                              minWidth: "auto",
+                              height: 56,
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              padding: 0, 
+                              padding: 0,
                             }}
                             disabled={!newMessage.trim()}
                           >
@@ -305,6 +308,16 @@ const PageProjectName = () => {
                           marginTop: 2,
                         }}
                       >
+                        <input
+                        type="hidden"
+                        name="nameOrganisation"
+                        value={currentOrganisationName}
+                      />
+                      <input
+                        type="hidden"
+                        name="nameRepository"
+                        value={nameRepository}
+                      />
                         <Button
                           onClick={() => {
                             handleViewDiscussion(contribution._id);
@@ -327,7 +340,6 @@ const PageProjectName = () => {
                     )}
                   </CardContent>
                 </Box>
-              ))}
             </Box>
           ))}
       </Box>

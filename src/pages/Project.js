@@ -69,7 +69,7 @@ const PageProjectName = () => {
       setError("Erreur lors de la récupération des contributions.");
     }
   };
-  //Recuperation du project choisit
+  //Récupération du project choisi
   const fetchRepos = async () => {
     try {
       const response = await axios.get(

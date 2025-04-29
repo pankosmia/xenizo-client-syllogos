@@ -3,18 +3,12 @@ import {createRoot} from "react-dom/client";
 import {Spa,SpSpa} from "pithekos-lib";
 import './index.css';
 import {createHashRouter, RouterProvider} from "react-router-dom";
-
-import Home from './pages/Home';
-
 import ExchangeData from './pages/Repositories';
 
 const router = createHashRouter([
+
     {
-        path: "/",
-        element: <Home/>,
-    },
-    {
-        path:"/contribution/",
+        path:"/",
         element: <ExchangeData/>
     },
     

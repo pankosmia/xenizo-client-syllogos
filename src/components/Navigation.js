@@ -16,16 +16,6 @@ function Navigation() {
           <Button
             color="inherit"
             component={Link}
-            to="/"
-            sx={{
-              color: location.pathname === "/" ? "black" : "white",
-            }}
-          >
-            Page d'accueil
-          </Button>
-          <Button
-            color="inherit"
-            component={Link}
             to="/contribution"
             sx={{
               color: location.pathname === "/contribution" ? "black" : "white",

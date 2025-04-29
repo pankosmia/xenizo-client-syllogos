@@ -8,7 +8,6 @@ import MessageIcon from "@mui/icons-material/Message";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import ArchivePage from "./Archives";
 import PageProjectName from "./Project";
-import Navigation from "../components/Navigation";
 import NewContributionPage from "./NewContribution";
 import moment from "moment";
 
@@ -24,7 +23,6 @@ const ExchangeData = () => {
 
   return (
     <Box>
-      <Navigation />
       <Box sx={{textAlign:"right", padding:2}}>
         <NewContributionPage />
       </Box>
@@ -48,7 +46,7 @@ const ExchangeData = () => {
           >
             <Typography
               component="a"
-              href="syllogos#/contribution"
+              href="syllogos#/"
               className={`tab ${
                 activeTab === "opened" ? "active" : ""
               } custom-button-page-project`}
